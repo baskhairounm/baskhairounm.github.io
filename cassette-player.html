@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karol & Martin's Love Mixtape</title>
+    <link rel="stylesheet" href="assets/css/cassette-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="cassette-player">
+            <div class="player-top">
+                <div class="speaker-left"></div>
+                <div class="display-section">
+                    <div class="display">
+                        <div class="display-text">
+                            <div class="track-info">
+                                <span class="track-number">TRACK 01</span>
+                                <span class="track-title">LOADING...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="speaker-right"></div>
+            </div>
+            
+            <div class="cassette-section">
+                <div class="cassette">
+                    <div class="cassette-body">
+                        <div class="cassette-label">
+                            <h1>Karol & Martin</h1>
+                            <p>Love Story Mixtape</p>
+                            <div class="side-info">
+                                <span>SIDE A</span>
+                                <span>90 MIN</span>
+                            </div>
+                        </div>
+                        <div class="cassette-reels">
+                            <div class="reel left-reel">
+                                <div class="reel-center"></div>
+                            </div>
+                            <div class="tape-section">
+                                <div class="tape-line"></div>
+                            </div>
+                            <div class="reel right-reel">
+                                <div class="reel-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="control-btn" id="prevBtn">⏮</button>
+                <button class="control-btn play-pause" id="playBtn">▶</button>
+                <button class="control-btn" id="nextBtn">⏭</button>
+                <button class="control-btn" id="shuffleBtn">🔀</button>
+            </div>
+            
+            <div class="volume-section">
+                <label for="volume">VOL</label>
+                <input type="range" id="volume" min="0" max="100" value="50">
+            </div>
+        </div>
+        
+        <div class="dedication">
+            <h2>Karol & Martin's Wedding</h2>
+            <p>A collection of songs that tell Karol and Martin's love story...</p>
+            <div class="heart">♥</div>
+        </div>
+        
+        <div class="playlist">
+            <h3>PLAYLIST</h3>
+            <div class="track-list" id="trackList">
+                <!-- Tracks will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <audio id="audioPlayer" preload="none"></audio>
+    <script src="assets/js/cassette-script.js"></script>
+</body>
+</html>
