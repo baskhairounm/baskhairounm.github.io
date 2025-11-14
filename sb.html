@@ -90,16 +90,34 @@
 
   #board {
     width:100%;
-    max-width:1000px;
+    max-width:1100px;
     margin:20px auto;
     display:grid;
     grid-template-columns:repeat(10,1fr);
-    gap:clamp(5px, 1.2vw, 12px);
+    grid-auto-rows:minmax(70px, auto);
+    gap:clamp(8px, 1.5vw, 15px);
     perspective:1000px;
-    padding:15px;
-    background:rgba(255,255,255,0.02);
-    border-radius:20px;
-    border:3px solid rgba(255,107,53,0.2);
+    padding:clamp(15px, 3vw, 30px);
+    background:radial-gradient(circle at center, rgba(139,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%);
+    border-radius:25px;
+    border:4px solid rgba(255,107,53,0.4);
+    box-shadow:0 0 50px rgba(255,0,0,0.3), inset 0 0 50px rgba(255,107,53,0.05);
+    position:relative;
+  }
+
+  #board::before {
+    content:'';
+    position:absolute;
+    inset:-4px;
+    border-radius:25px;
+    padding:4px;
+    background:linear-gradient(45deg, #ff6b35, #ff006e, #8b0000, #ff6b35);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity:0.6;
+    pointer-events:none;
   }
 
   .space {
@@ -138,8 +156,30 @@
   .red {background:linear-gradient(135deg, #8b0000 0%, #d32f2f 100%); border-color:#ff5252;}
   .checkpoint {background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color:#000; font-weight:bold; border-color:#fff;}
   .goback {background:linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); border-color:#ab47bc; font-weight:bold;}
-  .start {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); grid-column:1/11; font-size:clamp(16px, 3.5vw, 22px); color:#000; font-weight:bold; aspect-ratio:auto; padding:20px; border:3px solid #00ff00; box-shadow:0 0 30px rgba(0,255,0,0.5);}
-  .finish {background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%); grid-column:1/11; font-size:clamp(16px, 3.5vw, 22px); font-weight:bold; aspect-ratio:auto; padding:20px; border:3px solid #ff00ff; box-shadow:0 0 30px rgba(255,0,255,0.5);}
+  .remove-clothing {background:linear-gradient(135deg, #e91e63 0%, #f06292 100%); border-color:#ff4081; font-weight:bold; color:#fff;}
+  .add-clothing {background:linear-gradient(135deg, #1976d2 0%, #42a5f5 100%); border-color:#64b5f6; font-weight:bold; color:#fff;}
+  .shot {background:linear-gradient(135deg, #f57c00 0%, #ffb74d 100%); border-color:#ffcc80; font-weight:bold; color:#000;}
+  .start {
+    background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    font-size:clamp(18px, 4vw, 26px);
+    color:#000;
+    font-weight:bold;
+    aspect-ratio:auto !important;
+    padding:clamp(15px, 3vw, 25px);
+    border:4px solid #00ff00;
+    box-shadow:0 0 40px rgba(0,255,0,0.6), inset 0 0 20px rgba(255,255,255,0.2);
+    grid-column:1 / -1;
+  }
+  .finish {
+    background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%);
+    font-size:clamp(18px, 4vw, 26px);
+    font-weight:bold;
+    aspect-ratio:auto !important;
+    padding:clamp(15px, 3vw, 25px);
+    border:4px solid #ff00ff;
+    box-shadow:0 0 40px rgba(255,0,255,0.6), inset 0 0 20px rgba(255,255,255,0.2);
+    grid-column:1 / -1;
+  }
 
   .player1, .player2 {
     animation:pulse 1s ease-in-out infinite;
@@ -279,15 +319,16 @@
 
   /* Mobile Optimization */
   @media (max-width: 768px) {
-    #board {gap:5px; padding:10px;}
-    .space {padding:5px; font-size:9px;}
+    #board {gap:6px; padding:12px; grid-auto-rows:minmax(55px, auto);}
+    .space {padding:4px; font-size:9px; line-height:1.1;}
     h1 {font-size:32px;}
     button {margin:5px;}
   }
 
   @media (max-width: 480px) {
-    #board {gap:3px; padding:8px;}
-    .space {padding:4px; font-size:7px;}
+    #board {gap:4px; padding:8px; grid-auto-rows:minmax(45px, auto);}
+    .space {padding:3px; font-size:7px; line-height:1;}
+    .space::before {font-size:6px;}
   }
 
   .btn-group {
@@ -413,9 +454,9 @@ const fireCards = [
 ];
 
 const board = [
-  "start","Tease","Tease","Go Back 2","Tease","Heart","Tease","Checkpoint","Both draw Tease","Tease","Tease","Go Back 3","Tease","Heart","Tease",
-  "Tease → Heat","Heat","Heat","Heat","Go Back 2","Heart","Heat","Checkpoint","Both draw Heat","Heat","Heat","Spank 10 times","Go Back 4","Heat","Heat",
-  "Heat → Fire","Fire","Fire","Go Back 3","Fire","Heart","Fire","Checkpoint","Both draw Fire","Fire","Go Back 5","Fire","Heart","Fire","Fire","finish"
+  "start","Tease","Remove 1","Tease","Go Back 2","Tease","Heart","Tease","Checkpoint","Both draw Tease","Tease","Shot","Tease","Go Back 3","Tease","Heart",
+  "Tease → Heat","Heat","Add 1","Heat","Heat","Go Back 2","Heart","Heat","Remove 1","Checkpoint","Both draw Heat","Heat","Shot","Heat","Spank 10 times","Go Back 4","Heat",
+  "Heat → Fire","Fire","Fire","Remove 2","Go Back 3","Fire","Heart","Fire","Add 1","Checkpoint","Both draw Fire","Fire","Shot","Go Back 5","Fire","Heart","Fire","Fire","finish"
 ];
 
 // === STATE ===
@@ -443,12 +484,16 @@ document.getElementById("beginBtn").onclick = () => {
 function buildBoard() {
   const boardEl = document.getElementById("board");
   boardEl.innerHTML = "";
+
   board.forEach((txt, i) => {
     const div = document.createElement("div");
     div.className = "space";
 
     // Style based on tile type
-    if (txt.includes("Go Back")) div.classList.add("goback");
+    if (txt.includes("Remove")) div.classList.add("remove-clothing");
+    else if (txt.includes("Add")) div.classList.add("add-clothing");
+    else if (txt.includes("Shot")) div.classList.add("shot");
+    else if (txt.includes("Go Back")) div.classList.add("goback");
     else if (txt.includes("Tease") && !txt.includes("→")) div.classList.add("green");
     else if (txt.includes("Heat") && !txt.includes("→")) div.classList.add("orange");
     else if (txt.includes("Fire") && !txt.includes("→")) div.classList.add("red");
@@ -459,12 +504,16 @@ function buildBoard() {
 
     // Add emoji icons for special tiles
     let displayText = txt;
-    if (txt.includes("Go Back")) displayText = "⬅️ " + txt;
-    if (txt.includes("Heart")) displayText = "💕 " + txt;
-    if (txt.includes("Checkpoint")) displayText = "⭐ " + txt;
-    if (txt.includes("Both")) displayText = "👫 " + txt;
-    if (txt.includes("→")) displayText = "🔥 " + txt.replace("→"," → ");
-    if (txt.includes("Spank")) displayText = "👋 " + txt;
+    if (txt.includes("Remove 1")) displayText = "👕<br>Remove 1";
+    else if (txt.includes("Remove 2")) displayText = "👕👗<br>Remove 2";
+    else if (txt.includes("Add 1")) displayText = "👔<br>Add 1";
+    else if (txt.includes("Shot")) displayText = "🥃<br>Shot";
+    else if (txt.includes("Go Back")) displayText = "⬅️<br>" + txt;
+    else if (txt.includes("Heart")) displayText = "💕<br>" + txt;
+    else if (txt.includes("Checkpoint")) displayText = "⭐<br>" + txt;
+    else if (txt.includes("Both")) displayText = "👫<br>" + txt;
+    else if (txt.includes("→")) displayText = "🔥<br>" + txt.replace("→"," → ");
+    else if (txt.includes("Spank")) displayText = "👋<br>" + txt;
 
     div.innerHTML = displayText;
     div.dataset.index = i;
@@ -484,6 +533,28 @@ function landOn(pos) {
   let txt = board[pos];
   if (txt==="start" || txt==="finish") return "Move to the finish together when both are ready for the grand finale...";
 
+  // Handle Remove Clothing tiles
+  if (txt.includes("Remove 1")) {
+    const playerName = currentPlayer === 1 ? player1Name : player2Name;
+    return `👕 ${playerName} - Remove 1 piece of clothing!<br><br>Take it off slowly and seductively...`;
+  }
+  if (txt.includes("Remove 2")) {
+    const playerName = currentPlayer === 1 ? player1Name : player2Name;
+    return `👕👗 ${playerName} - Remove 2 pieces of clothing!<br><br>Strip down... things are heating up!`;
+  }
+
+  // Handle Add Clothing tiles
+  if (txt.includes("Add 1")) {
+    const playerName = currentPlayer === 1 ? player1Name : player2Name;
+    return `👔 ${playerName} - Put on 1 piece of clothing!<br><br>Cooling things down a bit... for now 😏`;
+  }
+
+  // Handle Shot tiles
+  if (txt.includes("Shot")) {
+    const playerName = currentPlayer === 1 ? player1Name : player2Name;
+    return `🥃 ${playerName} - Take a shot!<br><br>Bottoms up! Let's get this party started!`;
+  }
+
   // Handle Go Back tiles
   if (txt.includes("Go Back")) {
     const spaces = parseInt(txt.match(/\d+/)[0]);
@@ -495,21 +566,25 @@ function landOn(pos) {
     setTimeout(() => {
       buildBoard();
       updatePositions();
-    }, 800);
-    return `⬅️ OH NO! Go back ${spaces} spaces!<br><br>You landed on a penalty tile!`;
+      // Now land on the new tile
+      const newPos = currentPlayer === 1 ? p1 : p2;
+      const newAction = landOn(newPos);
+      document.getElementById("card").innerHTML = `⬅️ You went back ${spaces} spaces!<br><br>Now: ${newAction}`;
+    }, 1000);
+    return `⬅️ OH NO! Go back ${spaces} spaces!`;
   }
 
   if (txt.includes("Checkpoint") || txt.includes("Both")) {
-    let zone = pos<15 ? "Tease" : pos<30 ? "Heat" : "Fire";
+    let zone = pos<16 ? "Tease" : pos<32 ? "Heat" : "Fire";
     return `♥ BOTH PLAYERS ♥<br><br>${drawCard(zone)}<br><br>THEN<br><br>${drawCard(zone)}`;
   }
   if (txt.includes("Heart")) {
-    let zone = pos<15 ? "Tease" : pos<30 ? "Heat" : "Fire";
+    let zone = pos<16 ? "Tease" : pos<32 ? "Heat" : "Fire";
     return `♥ SIMULTANEOUS ♥<br><br>${drawCard(zone)}<br><br>Do this to each other at the same time`;
   }
   if (txt.includes("Spank 10")) return "👋 Spank your partner 10 times - let them choose how hard 😈";
   if (txt.includes("→")) return "🔥 You've entered the next zone! Things are heating up... 🔥";
-  let zone = pos<=15 ? "Tease" : pos<=30 ? "Heat" : "Fire";
+  let zone = pos<=16 ? "Tease" : pos<=32 ? "Heat" : "Fire";
   return drawCard(zone);
 }
 
@@ -644,12 +719,21 @@ document.getElementById("rollBtn").onclick = () => {
     document.getElementById("card").innerHTML = action;
 
     // Particle effects based on zone or tile type
-    if (action.includes("Go back")) {
+    if (action.includes("Remove")) {
+      createParticles("👕", 15);
+      createParticles("🔥", 10);
+    } else if (action.includes("Add 1")) {
+      createParticles("👔", 10);
+      createParticles("😅", 8);
+    } else if (action.includes("Take a shot")) {
+      createParticles("🥃", 15);
+      createParticles("🍺", 10);
+    } else if (action.includes("Go back")) {
       createParticles("⬅️", 15);
       createParticles("😱", 10);
-    } else if (pos < 15) {
+    } else if (pos < 16) {
       createParticles("💚", 10);
-    } else if (pos < 30) {
+    } else if (pos < 32) {
       createParticles("🧡", 15);
     } else {
       createParticles("🔥", 20);
