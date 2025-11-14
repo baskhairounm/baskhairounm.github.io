@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slow Burn - Digital Couples Game</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a0000 0%, #2d0a0a 50%, #1a0000 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    margin-bottom:15px;
+    text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff006e;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {text-shadow: 0 0 20px #ff6b35, 0 0 30px #ff006e;}
+    to {text-shadow: 0 0 30px #ff6b35, 0 0 50px #ff006e, 0 0 60px #ff006e;}
+  }
+
+  /* Player Name Setup */
+  #setupScreen {
+    max-width:500px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(255,255,255,0.05);
+    border-radius:20px;
+    border:2px solid rgba(255,107,53,0.3);
+    backdrop-filter:blur(10px);
+  }
+
+  #setupScreen h2 {
+    margin-bottom:30px;
+    color:#ff6b35;
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#ffb3ba;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:12px 15px;
+    border:2px solid rgba(255,107,53,0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:16px;
+    transition:0.3s;
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#ff6b35;
+    box-shadow:0 0 15px rgba(255,107,53,0.5);
+  }
+
+  /* Board */
+  #gameScreen {display:none;}
+
+  #positions {
+    font-size:clamp(12px, 3vw, 18px);
+    margin:10px 0 15px 0;
+    padding:10px;
+    background:rgba(255,255,255,0.05);
+    border-radius:10px;
+    display:inline-block;
+  }
+
+  #board {
+    width:100%;
+    max-width:1000px;
+    margin:20px auto;
+    display:grid;
+    grid-template-columns:repeat(10,1fr);
+    gap:clamp(5px, 1.2vw, 12px);
+    perspective:1000px;
+    padding:15px;
+    background:rgba(255,255,255,0.02);
+    border-radius:20px;
+    border:3px solid rgba(255,107,53,0.2);
+  }
+
+  .space {
+    width:100%;
+    aspect-ratio:1;
+    padding:clamp(6px, 1.5vw, 12px);
+    border-radius:15px;
+    font-size:clamp(8px, 1.5vw, 12px);
+    cursor:pointer;
+    transition:all 0.4s ease;
+    position:relative;
+    box-shadow:0 6px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    border:2px solid rgba(255,255,255,0.1);
+    line-height:1.2;
+  }
+
+  .space::before {
+    content:attr(data-index);
+    position:absolute;
+    top:2px;
+    left:4px;
+    font-size:clamp(7px, 1vw, 10px);
+    opacity:0.4;
+    font-weight:bold;
+  }
+
+  .space:hover {transform:translateY(-8px) scale(1.05); box-shadow:0 12px 35px rgba(0,0,0,0.8);}
+
+  .green {background:linear-gradient(135deg, #1a4d1a 0%, #2d7a2d 100%); border-color:#3a9d3a;}
+  .orange {background:linear-gradient(135deg, #cc5500 0%, #ff6b35 100%); border-color:#ff8c5a;}
+  .red {background:linear-gradient(135deg, #8b0000 0%, #d32f2f 100%); border-color:#ff5252;}
+  .checkpoint {background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color:#000; font-weight:bold; border-color:#fff;}
+  .goback {background:linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); border-color:#ab47bc; font-weight:bold;}
+  .start {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); grid-column:1/11; font-size:clamp(16px, 3.5vw, 22px); color:#000; font-weight:bold; aspect-ratio:auto; padding:20px; border:3px solid #00ff00; box-shadow:0 0 30px rgba(0,255,0,0.5);}
+  .finish {background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%); grid-column:1/11; font-size:clamp(16px, 3.5vw, 22px); font-weight:bold; aspect-ratio:auto; padding:20px; border:3px solid #ff00ff; box-shadow:0 0 30px rgba(255,0,255,0.5);}
+
+  .player1, .player2 {
+    animation:pulse 1s ease-in-out infinite;
+    z-index:10;
+  }
+
+  .player1 {
+    border:4px solid #00ffff;
+    box-shadow:0 0 30px #00ffff, inset 0 0 20px rgba(0,255,255,0.3);
+  }
+
+  .player2 {
+    border:4px solid #ff00ff;
+    box-shadow:0 0 30px #ff00ff, inset 0 0 20px rgba(255,0,255,0.3);
+  }
+
+  @keyframes pulse {
+    0%, 100% {transform:scale(1);}
+    50% {transform:scale(1.15);}
+  }
+
+  /* Card Display */
+  #card {
+    margin:20px auto;
+    padding:clamp(15px, 4vw, 30px);
+    max-width:700px;
+    min-height:120px;
+    background:linear-gradient(135deg, rgba(255,107,53,0.15) 0%, rgba(255,0,110,0.15) 100%);
+    border-radius:20px;
+    font-size:clamp(16px, 3.5vw, 24px);
+    border:2px solid rgba(255,107,53,0.3);
+    box-shadow:0 10px 40px rgba(255,107,53,0.3);
+    backdrop-filter:blur(10px);
+    animation:cardSlideIn 0.5s ease;
+  }
+
+  @keyframes cardSlideIn {
+    from {opacity:0; transform:translateY(-20px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  /* Dice */
+  #diceContainer {
+    display:inline-block;
+    margin:20px;
+  }
+
+  .dice {
+    width:80px;
+    height:80px;
+    background:linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    border-radius:15px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    font-weight:bold;
+    color:#8b0000;
+    box-shadow:0 10px 30px rgba(0,0,0,0.7);
+    animation:diceRoll 0.8s ease-out;
+  }
+
+  @keyframes diceRoll {
+    0% {transform:rotateX(0deg) rotateY(0deg) scale(1);}
+    25% {transform:rotateX(180deg) rotateY(180deg) scale(1.2);}
+    50% {transform:rotateX(360deg) rotateY(360deg) scale(1);}
+    75% {transform:rotateX(540deg) rotateY(540deg) scale(1.2);}
+    100% {transform:rotateX(720deg) rotateY(720deg) scale(1);}
+  }
+
+  /* Timer */
+  .timer-container {
+    margin:20px auto;
+    max-width:300px;
+  }
+
+  .timer {
+    font-size:clamp(32px, 8vw, 50px);
+    color:#ff0;
+    text-shadow:0 0 20px #ff0;
+    font-weight:bold;
+    margin:10px 0;
+  }
+
+  .timer-bar {
+    width:100%;
+    height:20px;
+    background:rgba(255,255,255,0.1);
+    border-radius:10px;
+    overflow:hidden;
+    margin:10px 0;
+  }
+
+  .timer-fill {
+    height:100%;
+    background:linear-gradient(90deg, #ff0000 0%, #ffff00 50%, #00ff00 100%);
+    transition:width 1s linear;
+    border-radius:10px;
+    box-shadow:0 0 20px rgba(255,255,0,0.8);
+  }
+
+  /* Buttons */
+  button {
+    padding:clamp(10px, 2vw, 15px) clamp(20px, 4vw, 40px);
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+    transition:all 0.3s ease;
+    box-shadow:0 5px 20px rgba(0,0,0,0.5);
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
+
+  button:hover {transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.7);}
+  button:active {transform:translateY(0); box-shadow:0 3px 10px rgba(0,0,0,0.5);}
+
+  #beginBtn {background:linear-gradient(135deg, #ff6b35 0%, #ff006e 100%); color:#fff;}
+  #rollBtn {background:linear-gradient(135deg, #ffff00 0%, #ffa500 100%); color:#000;}
+  #nextBtn {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color:#000;}
+  #undoBtn {background:linear-gradient(135deg, #888 0%, #666 100%); color:#fff; padding:10px 20px; font-size:14px;}
+  #saveBtn, #loadBtn {background:linear-gradient(135deg, #4a90e2 0%, #357abd 100%); color:#fff; padding:10px 20px; font-size:14px;}
+
+  /* Particles */
+  .particle {
+    position:fixed;
+    pointer-events:none;
+    animation:float 3s ease-out forwards;
+  }
+
+  @keyframes float {
+    0% {opacity:1; transform:translateY(0) scale(1);}
+    100% {opacity:0; transform:translateY(-200px) scale(0);}
+  }
+
+  /* Mobile Optimization */
+  @media (max-width: 768px) {
+    #board {gap:5px; padding:10px;}
+    .space {padding:5px; font-size:9px;}
+    h1 {font-size:32px;}
+    button {margin:5px;}
+  }
+
+  @media (max-width: 480px) {
+    #board {gap:3px; padding:8px;}
+    .space {padding:4px; font-size:7px;}
+  }
+
+  .btn-group {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    margin:10px 0;
+  }
+</style>
+</head>
+<body>
+<h1>🔥 Slow Burn 🔥</h1>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2>Welcome to Slow Burn</h2>
+  <p style="margin-bottom:25px; color:#ffb3ba;">Enter your names to begin your intimate journey...</p>
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter name..." maxlength="20">
+  </div>
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter name..." maxlength="20">
+  </div>
+  <button id="beginBtn" style="margin-top:25px;">Start the Fire 🔥</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div id="positions">Player 1: Start | Player 2: Start</div>
+  <div id="board"></div>
+  <div id="card">Get ready to ignite the passion...</div>
+  <div id="diceContainer"></div>
+  <div class="timer-container">
+    <div class="timer" id="timer"></div>
+    <div class="timer-bar">
+      <div class="timer-fill" id="timerFill"></div>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button id="rollBtn" style="display:none">🎲 Roll Dice</button>
+    <button id="nextBtn" style="display:none">Next Turn</button>
+  </div>
+  <div class="btn-group">
+    <button id="undoBtn" style="display:none">↶ Undo Move</button>
+    <button id="saveBtn">💾 Save Game</button>
+    <button id="loadBtn">📂 Load Game</button>
+  </div>
+</div>
+
+<script>
+// === DATA ===
+const teaseCards = [
+  "Kiss your partner slowly and passionately for 45 seconds",
+  "Trace your fingers sensually along their neck, shoulders, and chest",
+  "Whisper in detail exactly what you want to do to them tonight",
+  "Give a 2-minute full body massage focusing on their most sensitive areas",
+  "Breathe warmly on their neck while gently nibbling their ear",
+  "Slowly scratch your nails down their back and thighs",
+  "Feed each other something sweet, making intense eye contact throughout",
+  "Describe your deepest fantasy involving them in explicit detail",
+  "Kiss and lick every part of their body EXCEPT their genitals for 1 minute",
+  "Blindfold them and tease them with your lips and tongue for 1 minute",
+  "Undress each other slowly while maintaining eye contact",
+  "Take turns telling each other what makes you most aroused",
+  "Give them a sensual lap dance for 1 minute",
+  "Kiss along their inner thighs without touching their most sensitive areas",
+  "Blindfold your partner and slowly kiss their entire body for 90 seconds",
+  "Put handcuffs or restraints on them, then kiss and tease their neck",
+  "Blindfold yourself and let them guide you to kiss their favorite spots",
+  "Restrain their hands above their head and whisper dirty things in their ear"
+];
+
+const heatCards = [
+  "Remove all remaining clothes from each other as sensually as possible",
+  "Kiss, lick and suck their neck while grinding against them for 1 minute",
+  "Massage their inner thighs and tease around their genitals for 2 minutes",
+  "Grind against each other naked for 90 seconds - no penetration yet",
+  "Spend 2 minutes worshipping their nipples with your mouth and hands",
+  "Let them spank you 10 times - as hard as you can handle",
+  "Sit on their lap naked and make out intensely for 90 seconds",
+  "Use your hand or a toy directly on their genitals over/under underwear for 1 minute",
+  "Bite their neck, shoulders and chest - leave marks",
+  "Get on your knees and describe exactly how you want to please them",
+  "69 position - tease only, no direct contact yet - 1 minute",
+  "Let them watch while you touch yourself for 1 minute",
+  "Take turns edging each other - bring them close but don't let them finish",
+  "Dominant player: Pin them down and tease them mercilessly for 90 seconds",
+  "Handcuff them and pleasure them with your mouth anywhere but genitals for 2 minutes",
+  "Blindfold them, restrain their hands, then grind on them naked for 90 seconds",
+  "Restrain your partner and use ice cubes or feathers on their sensitive areas",
+  "Blindfold them and tease their genitals with your fingers for 2 minutes",
+  "Handcuff them to the bed and give them a slow, teasing body massage",
+  "Blindfolded partner: Let them touch and explore you while restrained for 2 minutes"
+];
+
+const fireCards = [
+  "Perform oral sex on your partner - 3 minutes of pure pleasure",
+  "Receive oral sex - tell them exactly how you want it - 3 minutes",
+  "69 position - make each other moan - 2 minutes",
+  "Penetration or strap-on - any position you both desire - 3 minutes",
+  "Use your favorite toy together - 3 minutes of intense pleasure",
+  "Manual stimulation - don't stop until they scream your name",
+  "Edge them intensely - bring them to the brink 3 times before allowing release",
+  "Wild passionate sex in your favorite position - no time limit",
+  "Dominant player: Spank them while taking them from behind - intense",
+  "Both try to make the other finish first - whoever loses goes next",
+  "Finish them with oral - make it unforgettable",
+  "Complete freedom - do whatever you both desire most right now",
+  "Simultaneous orgasm challenge - try to finish together",
+  "Final round: Make love until you both reach climax - game ends when you do 🔥",
+  "Handcuff them and perform oral sex until they beg to finish - 3 minutes minimum",
+  "Blindfold and restrain them, then have your way with them for 5 minutes",
+  "Restrain them and edge them repeatedly - don't let them finish until they're desperate",
+  "Blindfolded sex - one partner blindfolded while the other is in complete control",
+  "Handcuff them to the bed and ride them until you both climax",
+  "Restrain them and use toys on them while denying their release - 3 minutes",
+  "Blindfold them and make them guess what you're doing - oral, penetration, or toys",
+  "Full bondage: Handcuffs + blindfold + complete domination until climax"
+];
+
+const board = [
+  "start","Tease","Tease","Go Back 2","Tease","Heart","Tease","Checkpoint","Both draw Tease","Tease","Tease","Go Back 3","Tease","Heart","Tease",
+  "Tease → Heat","Heat","Heat","Heat","Go Back 2","Heart","Heat","Checkpoint","Both draw Heat","Heat","Heat","Spank 10 times","Go Back 4","Heat","Heat",
+  "Heat → Fire","Fire","Fire","Go Back 3","Fire","Heart","Fire","Checkpoint","Both draw Fire","Fire","Go Back 5","Fire","Heart","Fire","Fire","finish"
+];
+
+// === STATE ===
+let p1 = 0, p2 = 0, currentPlayer = 1, timerInterval;
+let player1Name = "Player 1", player2Name = "Player 2";
+let gameHistory = [];
+
+// === PLAYER NAMES ===
+document.getElementById("beginBtn").onclick = () => {
+  const p1Input = document.getElementById("player1Name").value.trim();
+  const p2Input = document.getElementById("player2Name").value.trim();
+
+  player1Name = p1Input || "Player 1";
+  player2Name = p2Input || "Player 2";
+
+  document.getElementById("setupScreen").style.display = "none";
+  document.getElementById("gameScreen").style.display = "block";
+  document.getElementById("rollBtn").style.display = "inline-block";
+  document.getElementById("card").innerHTML = `${player1Name} starts! Click Roll Dice 🎲`;
+  buildBoard();
+  updatePositions();
+};
+
+// === BUILD BOARD ===
+function buildBoard() {
+  const boardEl = document.getElementById("board");
+  boardEl.innerHTML = "";
+  board.forEach((txt, i) => {
+    const div = document.createElement("div");
+    div.className = "space";
+
+    // Style based on tile type
+    if (txt.includes("Go Back")) div.classList.add("goback");
+    else if (txt.includes("Tease") && !txt.includes("→")) div.classList.add("green");
+    else if (txt.includes("Heat") && !txt.includes("→")) div.classList.add("orange");
+    else if (txt.includes("Fire") && !txt.includes("→")) div.classList.add("red");
+
+    if (txt.includes("Checkpoint") || txt.includes("Both")) div.classList.add("checkpoint");
+    if (txt==="start") div.classList.add("start");
+    if (txt==="finish") div.classList.add("finish");
+
+    // Add emoji icons for special tiles
+    let displayText = txt;
+    if (txt.includes("Go Back")) displayText = "⬅️ " + txt;
+    if (txt.includes("Heart")) displayText = "💕 " + txt;
+    if (txt.includes("Checkpoint")) displayText = "⭐ " + txt;
+    if (txt.includes("Both")) displayText = "👫 " + txt;
+    if (txt.includes("→")) displayText = "🔥 " + txt.replace("→"," → ");
+    if (txt.includes("Spank")) displayText = "👋 " + txt;
+
+    div.innerHTML = displayText;
+    div.dataset.index = i;
+    if (i===p1) div.classList.add("player1");
+    if (i===p2) div.classList.add("player2");
+    boardEl.appendChild(div);
+  });
+}
+
+// === CARD LOGIC ===
+function drawCard(zone) {
+  let cards = zone==="Tease" ? teaseCards : zone==="Heat" ? heatCards : fireCards;
+  return cards[Math.floor(Math.random()*cards.length)];
+}
+
+function landOn(pos) {
+  let txt = board[pos];
+  if (txt==="start" || txt==="finish") return "Move to the finish together when both are ready for the grand finale...";
+
+  // Handle Go Back tiles
+  if (txt.includes("Go Back")) {
+    const spaces = parseInt(txt.match(/\d+/)[0]);
+    if (currentPlayer === 1) {
+      p1 = Math.max(0, p1 - spaces);
+    } else {
+      p2 = Math.max(0, p2 - spaces);
+    }
+    setTimeout(() => {
+      buildBoard();
+      updatePositions();
+    }, 800);
+    return `⬅️ OH NO! Go back ${spaces} spaces!<br><br>You landed on a penalty tile!`;
+  }
+
+  if (txt.includes("Checkpoint") || txt.includes("Both")) {
+    let zone = pos<15 ? "Tease" : pos<30 ? "Heat" : "Fire";
+    return `♥ BOTH PLAYERS ♥<br><br>${drawCard(zone)}<br><br>THEN<br><br>${drawCard(zone)}`;
+  }
+  if (txt.includes("Heart")) {
+    let zone = pos<15 ? "Tease" : pos<30 ? "Heat" : "Fire";
+    return `♥ SIMULTANEOUS ♥<br><br>${drawCard(zone)}<br><br>Do this to each other at the same time`;
+  }
+  if (txt.includes("Spank 10")) return "👋 Spank your partner 10 times - let them choose how hard 😈";
+  if (txt.includes("→")) return "🔥 You've entered the next zone! Things are heating up... 🔥";
+  let zone = pos<=15 ? "Tease" : pos<=30 ? "Heat" : "Fire";
+  return drawCard(zone);
+}
+
+// === DICE ANIMATION ===
+function showDice(value) {
+  const container = document.getElementById("diceContainer");
+  container.innerHTML = `<div class="dice">${value}</div>`;
+  setTimeout(() => container.innerHTML = "", 2000);
+}
+
+// === PARTICLES ===
+function createParticles(emoji, count = 15) {
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement("div");
+    particle.className = "particle";
+    particle.style.left = Math.random() * window.innerWidth + "px";
+    particle.style.top = window.innerHeight / 2 + "px";
+    particle.style.fontSize = (Math.random() * 20 + 20) + "px";
+    particle.textContent = emoji;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 3000);
+  }
+}
+
+// === TIMER ===
+function startTimer(seconds, callback) {
+  let time = seconds;
+  const totalTime = seconds;
+  document.getElementById("timer").textContent = `${time}s`;
+  document.getElementById("timerFill").style.width = "100%";
+
+  timerInterval = setInterval(() => {
+    time--;
+    document.getElementById("timer").textContent = `${time}s`;
+    const percentage = (time / totalTime) * 100;
+    document.getElementById("timerFill").style.width = percentage + "%";
+
+    if (time <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "";
+      document.getElementById("timerFill").style.width = "0%";
+      createParticles("✨", 20);
+      callback();
+    }
+  }, 1000);
+}
+
+// === UPDATE POSITIONS ===
+function updatePositions() {
+  document.getElementById("positions").textContent = `${player1Name}: space ${p1} | ${player2Name}: space ${p2}`;
+}
+
+// === SAVE/LOAD ===
+function saveGame() {
+  const gameState = {
+    p1, p2, currentPlayer, player1Name, player2Name, gameHistory
+  };
+  localStorage.setItem("slowBurnSave", JSON.stringify(gameState));
+  alert("Game saved! 💾");
+}
+
+function loadGame() {
+  const saved = localStorage.getItem("slowBurnSave");
+  if (!saved) {
+    alert("No saved game found!");
+    return;
+  }
+  const gameState = JSON.parse(saved);
+  p1 = gameState.p1;
+  p2 = gameState.p2;
+  currentPlayer = gameState.currentPlayer;
+  player1Name = gameState.player1Name || "Player 1";
+  player2Name = gameState.player2Name || "Player 2";
+  gameHistory = gameState.gameHistory || [];
+
+  document.getElementById("setupScreen").style.display = "none";
+  document.getElementById("gameScreen").style.display = "block";
+  document.getElementById("rollBtn").style.display = "inline-block";
+  document.getElementById("undoBtn").style.display = gameHistory.length > 0 ? "inline-block" : "none";
+
+  buildBoard();
+  updatePositions();
+  document.getElementById("card").innerHTML = `Game loaded! ${currentPlayer === 1 ? player1Name : player2Name}'s turn`;
+  alert("Game loaded! 📂");
+}
+
+// === UNDO ===
+function undoMove() {
+  if (gameHistory.length === 0) {
+    alert("No moves to undo!");
+    return;
+  }
+  const lastState = gameHistory.pop();
+  p1 = lastState.p1;
+  p2 = lastState.p2;
+  currentPlayer = lastState.currentPlayer;
+  buildBoard();
+  updatePositions();
+  document.getElementById("card").innerHTML = `Move undone! ${currentPlayer === 1 ? player1Name : player2Name}'s turn`;
+  document.getElementById("rollBtn").style.display = "inline-block";
+  document.getElementById("nextBtn").style.display = "none";
+  if (gameHistory.length === 0) {
+    document.getElementById("undoBtn").style.display = "none";
+  }
+}
+
+// === GAME FLOW ===
+document.getElementById("rollBtn").onclick = () => {
+  // Save state before move
+  gameHistory.push({p1, p2, currentPlayer});
+  document.getElementById("undoBtn").style.display = "inline-block";
+
+  const roll = Math.floor(Math.random()*6)+1;
+  showDice(roll);
+  createParticles("🎲", 10);
+
+  const playerName = currentPlayer === 1 ? player1Name : player2Name;
+  document.getElementById("card").innerHTML = `${playerName} rolled ${roll}! Moving...`;
+  document.getElementById("rollBtn").style.display = "none";
+
+  if (currentPlayer===1) { p1 = Math.min(p1+roll, board.length-1); }
+  else { p2 = Math.min(p2+roll, board.length-1); }
+
+  setTimeout(() => {
+    buildBoard();
+    updatePositions();
+  }, 400);
+
+  setTimeout(() => {
+    const pos = currentPlayer===1 ? p1 : p2;
+    const action = landOn(pos);
+    document.getElementById("card").innerHTML = action;
+
+    // Particle effects based on zone or tile type
+    if (action.includes("Go back")) {
+      createParticles("⬅️", 15);
+      createParticles("😱", 10);
+    } else if (pos < 15) {
+      createParticles("💚", 10);
+    } else if (pos < 30) {
+      createParticles("🧡", 15);
+    } else {
+      createParticles("🔥", 20);
+    }
+
+    if (action.includes("minute") || action.includes("seconds") || action.includes("90 seconds")) {
+      const secs = action.includes("5 minute") ? 300 : action.includes("3 minute") ? 180 : action.includes("2 minute") ? 120 : action.includes("90 seconds") ? 90 : action.includes("45 seconds") ? 45 : 60;
+      startTimer(secs, () => {
+        document.getElementById("nextBtn").style.display = "inline-block";
+      });
+      document.getElementById("nextBtn").style.display = "none";
+    } else {
+      document.getElementById("nextBtn").style.display = "inline-block";
+    }
+
+    if (p1 >= board.length-1 && p2 >= board.length-1) {
+      document.getElementById("card").innerHTML = `<h2>🔥 IGNITE 🔥<br><br>Both ${player1Name} and ${player2Name} reached the end!<br><br>Finish exactly how you want.<br><br>Game over when you both climax together.</h2>`;
+      document.getElementById("rollBtn").style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+      createParticles("🔥", 50);
+    }
+  }, 1500);
+};
+
+document.getElementById("nextBtn").onclick = () => {
+  currentPlayer = currentPlayer===1 ? 2 : 1;
+  const playerName = currentPlayer === 1 ? player1Name : player2Name;
+  document.getElementById("card").innerHTML = `${playerName}'s turn – Roll the dice! 🎲`;
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("rollBtn").style.display = "inline-block";
+  updatePositions();
+};
+
+document.getElementById("undoBtn").onclick = undoMove;
+document.getElementById("saveBtn").onclick = saveGame;
+document.getElementById("loadBtn").onclick = loadGame;
+
+buildBoard();
+</script>
+</body>
+</html>
