@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bedroom Bingo 🎯</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 50%, #4a00e0 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    color:#fff;
+    text-shadow:0 0 20px rgba(142, 45, 226, 0.8);
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#d4a5ff;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(142, 45, 226, 0.2);
+    border-radius:20px;
+    border:2px solid rgba(142, 45, 226, 0.4);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#d4a5ff;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(142, 45, 226, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#d4a5ff;
+    box-shadow:0 0 15px rgba(212, 165, 255, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    padding:20px;
+    background:rgba(142, 45, 226, 0.2);
+    border-radius:15px;
+    margin-bottom:30px;
+  }
+
+  .player-name {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#d4a5ff;
+    font-weight:700;
+  }
+
+  .completed-count {
+    font-size:clamp(16px, 3.5vw, 20px);
+    margin-top:10px;
+  }
+
+  .bingo-grid {
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:10px;
+    margin:30px auto;
+    max-width:700px;
+  }
+
+  .bingo-cell {
+    aspect-ratio:1;
+    background:rgba(142, 45, 226, 0.3);
+    border:3px solid rgba(142, 45, 226, 0.5);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px;
+    font-size:clamp(11px, 2.5vw, 14px);
+    cursor:pointer;
+    transition:all 0.3s;
+    position:relative;
+    font-weight:600;
+    text-align:center;
+  }
+
+  .bingo-cell:hover {
+    transform:scale(1.05);
+    border-color:#d4a5ff;
+  }
+
+  .bingo-cell.completed {
+    background:#8e2de2;
+    border-color:#d4a5ff;
+    box-shadow:0 0 20px rgba(212, 165, 255, 0.6);
+  }
+
+  .bingo-cell.completed::after {
+    content:'✓';
+    position:absolute;
+    font-size:clamp(30px, 6vw, 50px);
+    color:#fff;
+    font-weight:900;
+  }
+
+  .bingo-cell.free {
+    background:linear-gradient(135deg, #4a00e0, #8e2de2);
+    border-color:#d4a5ff;
+  }
+
+  .win-message {
+    display:none;
+    margin:30px auto;
+    padding:40px;
+    background:linear-gradient(135deg, #4a00e0, #8e2de2);
+    border-radius:20px;
+    border:3px solid #d4a5ff;
+    box-shadow:0 0 40px rgba(212, 165, 255, 0.8);
+    animation:pulse 2s infinite;
+  }
+
+  .win-message.show {
+    display:block;
+  }
+
+  @keyframes pulse {
+    0%, 100% {transform:scale(1);}
+    50% {transform:scale(1.05);}
+  }
+
+  .win-message h2 {
+    font-size:clamp(32px, 7vw, 48px);
+    margin-bottom:20px;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(142, 45, 226, 0.5);
+    border-radius:12px;
+    background:#8e2de2;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(142, 45, 226, 0.6);
+  }
+
+  @media (max-width: 768px) {
+    .bingo-grid {
+      gap:6px;
+      padding:10px;
+    }
+
+    .bingo-cell {
+      font-size:10px;
+      padding:5px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="content">
+<h1>🎯 Bedroom Bingo 🎯</h1>
+<p class="subtitle">"Complete activities to mark off squares - first to BINGO wins!"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2 style="color:#d4a5ff; margin-bottom:30px;">Player Names</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter your name...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter partner's name...">
+  </div>
+
+  <button id="startBtn">Generate Bingo Card 🎯</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="player-name" id="playerNames">Player 1 & Player 2</div>
+    <div class="completed-count">Completed: <span id="completedCount" style="color:#d4a5ff; font-weight:700;">0</span> / 25</div>
+  </div>
+
+  <div class="bingo-grid" id="bingoGrid"></div>
+
+  <div class="win-message" id="winMessage">
+    <h2>🎉 BINGO! 🎉</h2>
+    <p style="font-size:clamp(18px, 4vw, 24px);">You completed a line! Keep going for a full card!</p>
+  </div>
+
+  <div style="margin-top:30px;">
+    <button id="newCardBtn">🔄 New Bingo Card</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Bingo Activities
+const activities = [
+  "Kiss passionately for 2 minutes",
+  "Give a sensual massage",
+  "Try a new position",
+  "Have sex in a different room",
+  "Use a toy together",
+  "Take a shower together",
+  "Try roleplay",
+  "Make out with music",
+  "Give oral pleasure",
+  "Receive oral pleasure",
+  "Have morning sex",
+  "Have late night sex",
+  "Try mutual masturbation",
+  "Use ice cubes playfully",
+  "Give a striptease",
+  "Receive a striptease",
+  "Have sex with lights on",
+  "Try blindfolding",
+  "Use food during foreplay",
+  "69 position",
+  "Sex standing up",
+  "Try edging/teasing",
+  "Have quickie sex",
+  "Marathon session (1+ hour)",
+  "Try a new location",
+  "Watch porn together",
+  "Read erotica together",
+  "Sext each other",
+  "Take sexy photos",
+  "Give a lap dance",
+  "Receive a lap dance",
+  "Try temperature play",
+  "Use restraints/ties",
+  "Spanking play",
+  "Dirty talk session",
+  "Silent sex challenge",
+  "Dress up sexy",
+  "Strip poker/game",
+  "Body painting",
+  "Massage with oil",
+  "Bubble bath together",
+  "Sex in the dark",
+  "Try tantric techniques",
+  "Worship partner's body",
+  "Multiple rounds in one night",
+  "Wake partner with pleasure",
+  "Surprise spontaneous sex",
+  "Try exhibitionism (safe)",
+];
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let bingoCard = [];
+let completedCells = [];
+let hasBingo = false;
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  document.getElementById('playerNames').textContent = `${player1Name} & ${player2Name}`;
+
+  generateBingoCard();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+});
+
+// Generate Bingo Card
+function generateBingoCard() {
+  // Shuffle activities
+  const shuffled = [...activities].sort(() => Math.random() - 0.5);
+
+  // Select 24 activities (25th is FREE space)
+  bingoCard = shuffled.slice(0, 24);
+
+  // Insert FREE space at center (index 12)
+  bingoCard.splice(12, 0, 'FREE SPACE');
+
+  renderBingoCard();
+}
+
+// Render Bingo Card
+function renderBingoCard() {
+  const grid = document.getElementById('bingoGrid');
+  grid.innerHTML = '';
+
+  bingoCard.forEach((activity, index) => {
+    const cell = document.createElement('div');
+    cell.className = 'bingo-cell';
+    cell.textContent = activity;
+    cell.setAttribute('data-index', index);
+
+    if (activity === 'FREE SPACE') {
+      cell.classList.add('free', 'completed');
+      completedCells.push(index);
+    }
+
+    cell.addEventListener('click', () => toggleCell(index));
+    grid.appendChild(cell);
+  });
+
+  updateStats();
+}
+
+// Toggle Cell
+function toggleCell(index) {
+  if (bingoCard[index] === 'FREE SPACE') return;
+
+  const cell = document.querySelector(`.bingo-cell[data-index="${index}"]`);
+
+  if (completedCells.includes(index)) {
+    // Un-mark
+    completedCells = completedCells.filter(i => i !== index);
+    cell.classList.remove('completed');
+  } else {
+    // Mark as completed
+    completedCells.push(index);
+    cell.classList.add('completed');
+  }
+
+  updateStats();
+  checkBingo();
+}
+
+// Update Stats
+function updateStats() {
+  document.getElementById('completedCount').textContent = completedCells.length;
+}
+
+// Check for Bingo
+function checkBingo() {
+  const winPatterns = [
+    // Rows
+    [0, 1, 2, 3, 4],
+    [5, 6, 7, 8, 9],
+    [10, 11, 12, 13, 14],
+    [15, 16, 17, 18, 19],
+    [20, 21, 22, 23, 24],
+    // Columns
+    [0, 5, 10, 15, 20],
+    [1, 6, 11, 16, 21],
+    [2, 7, 12, 17, 22],
+    [3, 8, 13, 18, 23],
+    [4, 9, 14, 19, 24],
+    // Diagonals
+    [0, 6, 12, 18, 24],
+    [4, 8, 12, 16, 20]
+  ];
+
+  for (let pattern of winPatterns) {
+    if (pattern.every(index => completedCells.includes(index))) {
+      if (!hasBingo) {
+        hasBingo = true;
+        document.getElementById('winMessage').classList.add('show');
+      }
+      return;
+    }
+  }
+}
+
+// New Card
+document.getElementById('newCardBtn').addEventListener('click', () => {
+  if (confirm('Generate a new bingo card? Current progress will be lost.')) {
+    completedCells = [];
+    hasBingo = false;
+    document.getElementById('winMessage').classList.remove('show');
+    generateBingoCard();
+  }
+});
+</script>
+</body>
+</html>

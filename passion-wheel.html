@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Passion Wheel 🎡</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ee0979 0%, #ff6a00 50%, #ee0979 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    color:#fff;
+    text-shadow:0 0 30px rgba(255, 106, 0, 0.8);
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#ffd89b;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(255, 106, 0, 0.2);
+    border-radius:20px;
+    border:2px solid rgba(255, 106, 0, 0.4);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#ffd89b;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(255, 106, 0, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.3);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#ffd89b;
+    box-shadow:0 0 15px rgba(255, 216, 155, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:1000px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    padding:20px;
+    background:rgba(255, 106, 0, 0.2);
+    border-radius:15px;
+    margin-bottom:30px;
+  }
+
+  .player-name {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#ffd89b;
+    font-weight:700;
+  }
+
+  .wheels-container {
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin:40px 0;
+    flex-wrap:wrap;
+  }
+
+  .wheel-section {
+    flex:1;
+    min-width:200px;
+    max-width:300px;
+  }
+
+  .wheel-title {
+    font-size:clamp(18px, 4vw, 24px);
+    color:#ffd89b;
+    margin-bottom:15px;
+    font-weight:700;
+  }
+
+  .wheel {
+    width:100%;
+    aspect-ratio:1;
+    max-width:250px;
+    margin:0 auto;
+    border-radius:50%;
+    border:6px solid rgba(255, 106, 0, 0.6);
+    background:conic-gradient(
+      from 0deg,
+      #ee0979 0deg 90deg,
+      #ff6a00 90deg 180deg,
+      #ffd89b 180deg 270deg,
+      #ff006e 270deg 360deg
+    );
+    position:relative;
+    transition:transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    cursor:pointer;
+    box-shadow:0 0 30px rgba(255, 106, 0, 0.6);
+  }
+
+  .wheel:hover {
+    box-shadow:0 0 50px rgba(255, 106, 0, 0.9);
+  }
+
+  .wheel.spinning {
+    transition:transform 3s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  }
+
+  .wheel-pointer {
+    position:absolute;
+    top:-25px;
+    left:50%;
+    transform:translateX(-50%);
+    width:0;
+    height:0;
+    border-left:20px solid transparent;
+    border-right:20px solid transparent;
+    border-top:35px solid #ffd89b;
+    filter:drop-shadow(0 3px 10px rgba(255, 216, 155, 0.8));
+  }
+
+  .wheel-center {
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:#fff;
+    border:3px solid #ff6a00;
+  }
+
+  .result-display {
+    margin:40px auto;
+    padding:40px;
+    background:rgba(238, 9, 121, 0.2);
+    border-radius:20px;
+    border:3px solid rgba(238, 9, 121, 0.4);
+    max-width:700px;
+    min-height:200px;
+    display:none;
+  }
+
+  .result-display.show {
+    display:block;
+    animation:slideIn 0.5s;
+  }
+
+  @keyframes slideIn {
+    from {opacity:0; transform:translateY(-30px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  .result-item {
+    margin:15px 0;
+    font-size:clamp(18px, 4vw, 24px);
+    font-weight:600;
+  }
+
+  .result-label {
+    color:#ffd89b;
+    font-size:clamp(14px, 3vw, 18px);
+  }
+
+  .result-value {
+    color:#fff;
+    font-size:clamp(20px, 4.5vw, 28px);
+    font-weight:700;
+  }
+
+  .combined-challenge {
+    margin-top:30px;
+    padding:25px;
+    background:rgba(0,0,0,0.4);
+    border-radius:15px;
+    font-size:clamp(20px, 4.5vw, 30px);
+    line-height:1.6;
+    color:#ffd89b;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(255, 106, 0, 0.5);
+    border-radius:12px;
+    background:#ff6a00;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(255, 106, 0, 0.6);
+  }
+
+  #spinAllBtn {
+    background:linear-gradient(135deg, #ee0979, #ff6a00);
+    font-size:clamp(16px, 3.5vw, 22px);
+    padding:20px 50px;
+  }
+
+  #completeBtn, #nextBtn {display:none;}
+
+  @media (max-width: 768px) {
+    .wheels-container {
+      flex-direction:column;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="content">
+<h1>🎡 The Passion Wheel 🎡</h1>
+<p class="subtitle">"Spin multiple wheels to create your perfect challenge"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2 style="color:#ffd89b; margin-bottom:30px;">Player Names</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player...">
+  </div>
+
+  <button id="startBtn">Start Game 🎡</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="player-name" id="currentPlayerName">Player 1's Turn</div>
+  </div>
+
+  <div class="wheels-container">
+    <div class="wheel-section">
+      <div class="wheel-title">What?</div>
+      <div style="position:relative;">
+        <div class="wheel-pointer"></div>
+        <div class="wheel" id="wheel1"></div>
+      </div>
+    </div>
+
+    <div class="wheel-section">
+      <div class="wheel-title">Where?</div>
+      <div style="position:relative;">
+        <div class="wheel-pointer"></div>
+        <div class="wheel" id="wheel2"></div>
+      </div>
+    </div>
+
+    <div class="wheel-section">
+      <div class="wheel-title">How?</div>
+      <div style="position:relative;">
+        <div class="wheel-pointer"></div>
+        <div class="wheel" id="wheel3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <button id="spinAllBtn">🎡 SPIN ALL WHEELS</button>
+  </div>
+
+  <div class="result-display" id="resultDisplay">
+    <div class="result-item">
+      <div class="result-label">Action:</div>
+      <div class="result-value" id="resultWhat">...</div>
+    </div>
+    <div class="result-item">
+      <div class="result-label">Location:</div>
+      <div class="result-value" id="resultWhere">...</div>
+    </div>
+    <div class="result-item">
+      <div class="result-label">Style:</div>
+      <div class="result-value" id="resultHow">...</div>
+    </div>
+    <div class="combined-challenge" id="combinedChallenge">
+      Your challenge will appear here...
+    </div>
+  </div>
+
+  <div style="margin-top:30px;">
+    <button id="completeBtn">✅ Complete</button>
+    <button id="nextBtn">Next Player ➡️</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Wheel options
+const wheelOptions = {
+  what: [
+    "Kiss", "Massage", "Undress", "Touch", "Lick", "Bite", "Caress", "Worship",
+    "Tease", "Please", "Explore", "Seduce"
+  ],
+  where: [
+    "Neck", "Lips", "Chest", "Back", "Thighs", "Everywhere", "Partner's Choice",
+    "Surprise Spot", "Ears", "Shoulders", "Hips", "Feet"
+  ],
+  how: [
+    "Slowly", "Passionately", "Gently", "Intensely", "Playfully", "Seductively",
+    "Teasingly", "Romantically", "Firmly", "Softly", "Rhythmically", "Spontaneously"
+  ]
+};
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let currentPlayerIndex = 0;
+let isSpinning = false;
+let results = {what: '', where: '', how: ''};
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  updateCurrentPlayer();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+});
+
+// Update Current Player
+function updateCurrentPlayer() {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  document.getElementById('currentPlayerName').textContent = `${playerName}'s Turn`;
+}
+
+// Spin All Wheels
+document.getElementById('spinAllBtn').addEventListener('click', () => {
+  if (isSpinning) return;
+
+  isSpinning = true;
+  document.getElementById('spinAllBtn').disabled = true;
+  document.getElementById('resultDisplay').classList.remove('show');
+
+  // Spin each wheel
+  spinWheel('wheel1', 'what');
+  spinWheel('wheel2', 'where');
+  spinWheel('wheel3', 'how');
+
+  // Show results after spinning
+  setTimeout(() => {
+    showResults();
+    isSpinning = false;
+  }, 3000);
+});
+
+// Spin Individual Wheel
+function spinWheel(wheelId, category) {
+  const wheel = document.getElementById(wheelId);
+  const options = wheelOptions[category];
+
+  // Random rotations
+  const spins = 5 + Math.floor(Math.random() * 5);
+  const finalRotation = 360 * spins + Math.floor(Math.random() * 360);
+
+  wheel.style.transform = `rotate(${finalRotation}deg)`;
+
+  // Determine result
+  const normalizedAngle = finalRotation % 360;
+  const segmentSize = 360 / options.length;
+  const selectedIndex = Math.floor(normalizedAngle / segmentSize);
+
+  results[category] = options[selectedIndex];
+}
+
+// Show Results
+function showResults() {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+
+  document.getElementById('resultWhat').textContent = results.what;
+  document.getElementById('resultWhere').textContent = results.where;
+  document.getElementById('resultHow').textContent = results.how;
+
+  const challenge = `${playerName}: ${results.how} ${results.what} your partner's ${results.where}`;
+  document.getElementById('combinedChallenge').textContent = challenge;
+
+  document.getElementById('resultDisplay').classList.add('show');
+  document.getElementById('completeBtn').style.display = 'inline-block';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+// Complete Challenge
+document.getElementById('completeBtn').addEventListener('click', () => {
+  alert('✅ Challenge completed!');
+});
+
+// Next Player
+document.getElementById('nextBtn').addEventListener('click', () => {
+  currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+  updateCurrentPlayer();
+
+  document.getElementById('resultDisplay').classList.remove('show');
+  document.getElementById('spinAllBtn').disabled = false;
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // Reset wheels
+  document.getElementById('wheel1').style.transform = 'rotate(0deg)';
+  document.getElementById('wheel2').style.transform = 'rotate(0deg)';
+  document.getElementById('wheel3').style.transform = 'rotate(0deg)';
+});
+
+// New Game
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? All progress will be lost.')) {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>

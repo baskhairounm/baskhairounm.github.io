@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spin the Bottle 2.0 🍾</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #12c2e9 0%, #c471ed 50%, #f64f59 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    color:#fff;
+    text-shadow:0 0 30px rgba(196, 113, 237, 0.8);
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#fff;
+    margin-bottom:30px;
+    opacity:0.9;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(196, 113, 237, 0.2);
+    border-radius:20px;
+    border:2px solid rgba(196, 113, 237, 0.4);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#fff;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(196, 113, 237, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.3);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#fff;
+    box-shadow:0 0 15px rgba(255, 255, 255, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    padding:20px;
+    background:rgba(196, 113, 237, 0.2);
+    border-radius:15px;
+    margin-bottom:30px;
+  }
+
+  .spin-count {
+    font-size:clamp(18px, 4vw, 24px);
+    font-weight:700;
+  }
+
+  .bottle-container {
+    margin:60px auto;
+    position:relative;
+    width:clamp(300px, 60vw, 500px);
+    height:clamp(300px, 60vw, 500px);
+  }
+
+  .bottle-circle {
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:4px solid rgba(255,255,255,0.3);
+    position:relative;
+    background:radial-gradient(circle, rgba(196, 113, 237, 0.1), transparent);
+  }
+
+  .player-markers {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+  }
+
+  .player-marker {
+    position:absolute;
+    width:60px;
+    height:60px;
+    background:rgba(255,255,255,0.3);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:clamp(12px, 2.5vw, 14px);
+    border:3px solid rgba(255,255,255,0.6);
+  }
+
+  .player-marker.p1 {
+    top:50%;
+    left:-30px;
+    transform:translateY(-50%);
+    background:rgba(18, 194, 233, 0.5);
+  }
+
+  .player-marker.p2 {
+    top:50%;
+    right:-30px;
+    transform:translateY(-50%);
+    background:rgba(246, 79, 89, 0.5);
+  }
+
+  .bottle {
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:200px;
+    height:60px;
+    background:linear-gradient(90deg, transparent 0%, #fff 20%, #fff 80%, transparent 100%);
+    transform:translate(-50%, -50%);
+    transform-origin:center;
+    border-radius:30px;
+    transition:transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    box-shadow:0 0 20px rgba(255,255,255,0.6);
+    cursor:pointer;
+  }
+
+  .bottle:hover {
+    box-shadow:0 0 30px rgba(255,255,255,0.9);
+  }
+
+  .bottle.spinning {
+    transition:transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  }
+
+  .result-display {
+    margin:40px auto;
+    padding:40px;
+    background:rgba(196, 113, 237, 0.3);
+    border-radius:20px;
+    max-width:700px;
+    display:none;
+  }
+
+  .result-display.show {
+    display:block;
+    animation:slideIn 0.5s;
+  }
+
+  @keyframes slideIn {
+    from {opacity:0; transform:translateY(-30px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  .result-text {
+    font-size:clamp(24px, 5vw, 36px);
+    margin-bottom:20px;
+    font-weight:700;
+  }
+
+  .challenge-text {
+    font-size:clamp(18px, 4vw, 26px);
+    line-height:1.6;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(255,255,255,0.5);
+    border-radius:12px;
+    background:rgba(196, 113, 237, 0.8);
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(196, 113, 237, 0.6);
+    background:rgba(196, 113, 237, 1);
+  }
+
+  #spinBtn {
+    background:linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+    font-size:clamp(16px, 3.5vw, 22px);
+    padding:20px 50px;
+  }
+
+  #nextBtn {display:none;}
+</style>
+</head>
+<body>
+<div class="content">
+<h1>🍾 Spin the Bottle 2.0 🍾</h1>
+<p class="subtitle">"Let the bottle decide your fate"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2 style="margin-bottom:30px;">Player Names</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player...">
+  </div>
+
+  <button id="startBtn">Start Game 🍾</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="spin-count">Spin #<span id="spinCount">1</span></div>
+  </div>
+
+  <div class="bottle-container">
+    <div class="bottle-circle">
+      <div class="player-markers">
+        <div class="player-marker p1" id="p1Marker">P1</div>
+        <div class="player-marker p2" id="p2Marker">P2</div>
+      </div>
+      <div class="bottle" id="bottle"></div>
+    </div>
+  </div>
+
+  <div>
+    <button id="spinBtn">🍾 SPIN THE BOTTLE</button>
+  </div>
+
+  <div class="result-display" id="resultDisplay">
+    <div class="result-text" id="resultText">The bottle points to...</div>
+    <div class="challenge-text" id="challengeText">Challenge appears here...</div>
+  </div>
+
+  <div style="margin-top:30px;">
+    <button id="nextBtn">Next Spin ➡️</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Challenges
+const challenges = [
+  "Kiss for 30 seconds",
+  "Give a 2-minute massage",
+  "Remove one item of clothing",
+  "Whisper something dirty",
+  "Sit on their lap for 3 spins",
+  "Give them a lap dance",
+  "Kiss their neck",
+  "Let them kiss you anywhere",
+  "Body shot",
+  "Trade one piece of clothing",
+  "Make out for 1 minute",
+  "Give oral pleasure (or drink)",
+  "Striptease",
+  "Let them undress you",
+  "Do whatever they say for 5 minutes"
+];
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let spinCount = 1;
+let isSpinning = false;
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  document.getElementById('p1Marker').textContent = player1Name.substring(0, 3).toUpperCase();
+  document.getElementById('p2Marker').textContent = player2Name.substring(0, 3).toUpperCase();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+});
+
+// Spin Bottle
+document.getElementById('spinBtn').addEventListener('click', spinBottle);
+document.getElementById('bottle').addEventListener('click', spinBottle);
+
+function spinBottle() {
+  if (isSpinning) return;
+
+  isSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('resultDisplay').classList.remove('show');
+
+  const bottle = document.getElementById('bottle');
+  const spins = 5 + Math.floor(Math.random() * 5);
+  const finalRotation = 360 * spins + Math.floor(Math.random() * 360);
+
+  bottle.classList.add('spinning');
+  bottle.style.transform = `translate(-50%, -50%) rotate(${finalRotation}deg)`;
+
+  setTimeout(() => {
+    bottle.classList.remove('spinning');
+    isSpinning = false;
+
+    // Determine who bottle points to (simplified: 50/50)
+    const pointsTo = Math.random() < 0.5 ? player1Name : player2Name;
+    const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+
+    showResult(pointsTo, challenge);
+  }, 4000);
+}
+
+// Show Result
+function showResult(player, challenge) {
+  document.getElementById('resultText').textContent = `The bottle points to ${player}!`;
+  document.getElementById('challengeText').textContent = challenge;
+  document.getElementById('resultDisplay').classList.add('show');
+  document.getElementById('nextBtn').style.display = 'inline-block';
+}
+
+// Next Spin
+document.getElementById('nextBtn').addEventListener('click', () => {
+  spinCount++;
+  document.getElementById('spinCount').textContent = spinCount;
+  document.getElementById('spinBtn').disabled = false;
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('resultDisplay').classList.remove('show');
+});
+
+// New Game
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game?')) {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>

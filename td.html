@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Truth or Dare: After Dark 🌙</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #0a0015 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* Animated Background Stars */
+  .stars {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .star {
+    position:absolute;
+    width:2px;
+    height:2px;
+    background:white;
+    border-radius:50%;
+    animation:twinkle 3s infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% {opacity:0;}
+    50% {opacity:1;}
+  }
+
+  .content {
+    position:relative;
+    z-index:1;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease infinite;
+    filter: drop-shadow(0 0 20px rgba(255,0,255,0.5));
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#ff69b4;
+    margin-bottom:30px;
+    opacity:0.9;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:50px;
+    background:linear-gradient(135deg,
+      rgba(255,0,255,0.1) 0%,
+      rgba(0,255,255,0.1) 100%);
+    border-radius:30px;
+    border:3px solid rgba(255,0,255,0.4);
+    backdrop-filter:blur(20px);
+    box-shadow:0 20px 80px rgba(255,0,255,0.3),
+               inset 0 0 50px rgba(255,0,255,0.05);
+  }
+
+  #setupScreen h2 {
+    margin-bottom:30px;
+    color:#ff00ff;
+    text-shadow:0 0 20px rgba(255,0,255,0.8);
+    font-size: clamp(28px, 6vw, 36px);
+  }
+
+  .input-group {
+    margin:25px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:10px;
+    color:#00ffff;
+    font-size:clamp(16px, 3.5vw, 20px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:16px 20px;
+    border:2px solid rgba(255,0,255,0.5);
+    border-radius:12px;
+    background:rgba(0,0,0,0.6);
+    color:#fff;
+    font-size:clamp(16px, 3.5vw, 18px);
+    transition:0.3s;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,0.3);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#00ffff;
+    box-shadow:0 0 20px rgba(0,255,255,0.6),
+               inset 0 2px 5px rgba(0,0,0,0.3);
+    background:rgba(0,0,0,0.7);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:1400px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+    margin-bottom:30px;
+    padding:20px 30px;
+    background:linear-gradient(135deg,
+      rgba(255,0,255,0.15) 0%,
+      rgba(0,255,255,0.15) 100%);
+    border-radius:20px;
+    border:2px solid rgba(255,0,255,0.4);
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+  }
+
+  .stat-box {
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .stat-box span {
+    color:#00ffff;
+    font-weight:700;
+    font-size:clamp(16px, 3.5vw, 22px);
+  }
+
+  .current-player {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#ff00ff;
+    font-weight:700;
+    text-shadow:0 0 20px rgba(255,0,255,0.8);
+  }
+
+  /* Spinning Wheel */
+  .wheel-container {
+    margin:40px auto;
+    position:relative;
+    max-width:500px;
+  }
+
+  .wheel-wrapper {
+    position:relative;
+    width:clamp(300px, 60vw, 500px);
+    height:clamp(300px, 60vw, 500px);
+    margin:0 auto;
+  }
+
+  .wheel {
+    width:100%;
+    height:100%;
+    border-radius:50%;
+    border:8px solid rgba(255,0,255,0.5);
+    box-shadow:0 0 40px rgba(255,0,255,0.6),
+               inset 0 0 40px rgba(0,0,0,0.5);
+    position:relative;
+    transition:transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    background:conic-gradient(
+      from 0deg,
+      #ff00ff 0deg 90deg,
+      #00ffff 90deg 180deg,
+      #ff0066 180deg 270deg,
+      #ffd700 270deg 360deg
+    );
+  }
+
+  .wheel.spinning {
+    transition:transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  }
+
+  .wheel-section {
+    position:absolute;
+    width:50%;
+    height:50%;
+    top:50%;
+    left:50%;
+    transform-origin:0% 0%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(24px, 5vw, 36px);
+    font-weight:700;
+    text-shadow:0 2px 10px rgba(0,0,0,0.8);
+  }
+
+  .section-truth {
+    transform:rotate(45deg);
+  }
+
+  .section-dare {
+    transform:rotate(135deg);
+  }
+
+  .section-extreme {
+    transform:rotate(225deg);
+  }
+
+  .section-wildcard {
+    transform:rotate(315deg);
+  }
+
+  .wheel-pointer {
+    position:absolute;
+    top:-30px;
+    left:50%;
+    transform:translateX(-50%);
+    width:0;
+    height:0;
+    border-left:30px solid transparent;
+    border-right:30px solid transparent;
+    border-top:50px solid #ffd700;
+    filter:drop-shadow(0 5px 15px rgba(255,215,0,0.8));
+    z-index:10;
+  }
+
+  .wheel-center {
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:linear-gradient(135deg, #ff00ff, #00ffff);
+    border:4px solid #ffd700;
+    box-shadow:0 0 30px rgba(255,215,0,0.8);
+    z-index:5;
+  }
+
+  .spin-instruction {
+    margin-top:30px;
+    font-size:clamp(18px, 4vw, 24px);
+    color:#00ffff;
+    font-weight:600;
+  }
+
+  /* Challenge Display */
+  .challenge-display {
+    margin:40px auto;
+    padding:50px 40px;
+    max-width:900px;
+    min-height:200px;
+    background:linear-gradient(135deg,
+      rgba(255,0,255,0.15) 0%,
+      rgba(0,255,255,0.15) 50%,
+      rgba(255,0,255,0.15) 100%);
+    border-radius:25px;
+    border:3px solid rgba(255,0,255,0.5);
+    box-shadow:0 20px 80px rgba(255,0,255,0.4),
+               inset 0 0 50px rgba(255,0,255,0.1);
+    position:relative;
+    overflow:hidden;
+    animation:slideIn 0.5s ease;
+  }
+
+  @keyframes slideIn {
+    from {opacity:0; transform:translateY(-30px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  .challenge-display::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,0.15),
+      transparent);
+    animation:shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {left:-100%;}
+    50%, 100% {left:100%;}
+  }
+
+  .challenge-type {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#00ffff;
+    margin-bottom:20px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:3px;
+  }
+
+  .challenge-text {
+    font-size:clamp(20px, 4vw, 32px);
+    line-height:1.6;
+    color:#fff;
+    font-weight:500;
+  }
+
+  .challenge-player {
+    margin-top:20px;
+    font-size:clamp(18px, 3.5vw, 24px);
+    color:#ff00ff;
+    font-weight:700;
+  }
+
+
+  /* Buttons */
+  button {
+    padding:clamp(16px, 3vw, 20px) clamp(32px, 6vw, 60px);
+    font-size:clamp(16px, 3.5vw, 22px);
+    margin:15px;
+    border:3px solid rgba(255,0,255,0.5);
+    border-radius:15px;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s ease;
+    box-shadow:0 8px 30px rgba(0,0,0,0.6),
+               inset 0 1px 5px rgba(255,255,255,0.2);
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    position:relative;
+    overflow:hidden;
+    z-index:1;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button::before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:0;
+    height:0;
+    border-radius:50%;
+    background:rgba(255,255,255,0.25);
+    transform:translate(-50%, -50%);
+    transition:width 0.6s, height 0.6s;
+    z-index:-1;
+  }
+
+  button:not(:disabled):hover::before {
+    width:350px;
+    height:350px;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-5px) scale(1.05);
+    box-shadow:0 15px 50px rgba(255,0,255,0.8),
+               inset 0 1px 5px rgba(255,255,255,0.3);
+  }
+
+  #startBtn {background:linear-gradient(135deg, #ff00ff 0%, #00ffff 100%); color:#fff;}
+  #spinBtn {background:linear-gradient(135deg, #ffd700 0%, #ff00ff 100%); color:#fff;}
+  #completeBtn {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color:#000;}
+  #skipBtn {background:linear-gradient(135deg, #ff6600 0%, #ff0066 100%); color:#fff;}
+  #nextBtn {background:linear-gradient(135deg, #00ffff 0%, #0099ff 100%); color:#fff;}
+  #newGameBtn {background:linear-gradient(135deg, #666 0%, #999 100%); color:#fff;}
+
+  /* Particles */
+  .particle {
+    position:fixed;
+    pointer-events:none;
+    animation:floatUp 3s ease-out forwards;
+    z-index:1000;
+  }
+
+  @keyframes floatUp {
+    0% {opacity:1; transform:translateY(0) scale(1) rotate(0deg);}
+    100% {opacity:0; transform:translateY(-300px) scale(0) rotate(360deg);}
+  }
+
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .game-header {
+      flex-direction:column;
+      text-align:center;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="content">
+<h1>🌙 Truth or Dare: After Dark 🌙</h1>
+<p class="subtitle">"Where secrets are revealed and desires are unleashed"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2>Enter Player Names</h2>
+  <p style="color:#ff69b4; margin-bottom:30px; font-size:clamp(14px, 3vw, 16px);">
+    Let the wheel decide your fate...
+  </p>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player..." maxlength="20">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player..." maxlength="20">
+  </div>
+
+  <button id="startBtn" style="margin-top:30px;">Begin the Game 🌙</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="stat-box">Round: <span id="roundCount">1</span></div>
+    <div class="current-player">
+      <span id="currentPlayerName">Player 1</span>'s Turn
+    </div>
+    <div class="stat-box">Completed: <span id="completedCount">0</span></div>
+  </div>
+
+  <div class="wheel-container" id="wheelContainer">
+    <div class="wheel-wrapper">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="wheel">
+        <div class="wheel-section section-truth">💙<br>TRUTH</div>
+        <div class="wheel-section section-dare">💜<br>DARE</div>
+        <div class="wheel-section section-extreme">❤️<br>EXTREME</div>
+        <div class="wheel-section section-wildcard">⭐<br>WILD</div>
+      </div>
+      <div class="wheel-center"></div>
+    </div>
+    <div class="spin-instruction">Click "SPIN" to let fate decide!</div>
+  </div>
+
+  <div class="challenge-display" id="challengeDisplay" style="display:none;">
+    <div class="challenge-type" id="challengeType">TRUTH</div>
+    <div class="challenge-text" id="challengeText">Question appears here...</div>
+    <div class="challenge-player" id="challengePlayer">Player 1's Challenge</div>
+  </div>
+
+  <div style="margin-top:40px;">
+    <button id="spinBtn">🎰 SPIN THE WHEEL</button>
+    <button id="completeBtn" style="display:none;">✅ Complete</button>
+    <button id="skipBtn" style="display:none;">🍺 Drink Instead</button>
+    <button id="nextBtn" style="display:none;">Next Player</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Generate stars
+function createStars() {
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    starsContainer.appendChild(star);
+  }
+}
+createStars();
+
+// === ALL TRUTHS MIXED ===
+const allTruths = [
+  "What's the most romantic thing you've ever done for someone?",
+  "Describe your ideal date night in detail.",
+  "What's your biggest turn-on?",
+  "Have you ever had a sex dream about me? Describe it.",
+  "What's the most adventurous place you've fantasized about having sex?",
+  "What's one thing about me that turns you on the most?",
+  "How many people have you kissed?",
+  "What's your favorite part of my body?",
+  "Have you ever had a one-night stand?",
+  "What's the most attracted you've ever been to someone at first sight?",
+  "What do you think about when you touch yourself?",
+  "Describe your perfect foreplay in detail.",
+  "What's your favorite position and why?",
+  "Have you ever wanted to watch or be watched?",
+  "What's a fantasy you've never told anyone?",
+  "Rate our sexual chemistry from 1-10 and explain why.",
+  "What's something you want me to do more of in bed?",
+  "Have you ever used a toy? Describe the experience.",
+  "What turns you on about me specifically?",
+  "What's the longest you've gone without sexual release?",
+  "Have you ever been tied up or tied someone up?",
+  "What's the kinkiest thing you've ever done?",
+  "Are you dominant or submissive, and why?",
+  "Have you ever had sex in public? Where?",
+  "What's your opinion on spanking?",
+  "Describe the best oral experience you've ever had.",
+  "Have you ever roleplayed? What scenario?",
+  "What's something 'taboo' that turns you on?",
+  "Have you ever been walked in on? Tell the story.",
+  "What's your wildest sexual experience?",
+  "What's the dirtiest text message you've ever sent?",
+  "Have you ever masturbated thinking about someone in this room?",
+  "What's your favorite way to be touched?",
+  "Describe the last time you got really turned on.",
+  "What's something you're too embarrassed to ask for in bed?",
+  "Have you ever faked it? Why?",
+  "What's your secret sexual talent?",
+  "Tell me about the first time you touched yourself.",
+  "What's the most times you've done it in one day?",
+  "Have you ever sexted someone? Show an example.",
+  "Describe exactly how you like to be pleasured.",
+  "What's a fantasy involving me that you've never shared?",
+  "Have you ever thought about a threesome? With who?",
+  "What's the most intense orgasm you've ever had?",
+  "Rate every sexual experience you've had from best to worst.",
+  "What's something you want me to do to you right now?",
+  "Have you ever been blindfolded during sex?",
+  "What's your favorite thing about going down on someone?",
+  "Describe your ideal one-night stand scenario.",
+  "What's something you've seen in porn that you want to try?",
+  "Have you ever had anal? Describe the experience.",
+  "What's the roughest you've ever been with someone?",
+  "Have you ever used food during sex? What and how?",
+  "Describe your most intense makeout session.",
+  "What's your pain threshold during sex?",
+  "Have you ever done it in a car? Where were you parked?",
+  "What's the longest foreplay session you've had?",
+  "Have you ever recorded yourself? Would you show it?",
+  "What's your opinion on dirty talk? Give an example.",
+  "Describe the last time you were completely sexually satisfied.",
+  "Describe in graphic detail your deepest sexual fantasy.",
+  "What's the most degrading thing you've done or had done to you?",
+  "Have you ever cheated? Give all the details.",
+  "What's the largest age gap you've had with a sexual partner?",
+  "Describe your wildest group sex experience or fantasy.",
+  "What's something you'd never admit to anyone except in this game?",
+  "Have you ever had sex with someone you shouldn't have? Who?",
+  "What's the most taboo thing that turns you on?",
+  "Describe your most intense sexual encounter in explicit detail.",
+  "What's your darkest sexual secret?",
+  "Have you ever been part of the mile-high club? Details.",
+  "What's the kinkiest request anyone has made of you?",
+  "Describe a time when you completely lost control sexually.",
+  "What's something you judge others for but secretly want to try?",
+  "Have you ever had a sex dream about someone here? Describe it vividly.",
+  "What's your most shameful turn-on?",
+  "Describe the last time you were used for someone's pleasure.",
+  "What's the most people you've been with at once?",
+  "Tell the story of your most intense orgasm in detail.",
+  "What's something you've done that would shock everyone who knows you?",
+  "Confess your absolute darkest desire - no holding back.",
+  "Describe the most depraved fantasy you've ever had.",
+  "Tell us about a time you completely dominated or were dominated.",
+  "What's your most extreme kink that you've actually acted on?",
+  "Describe in explicit detail what you want done to you right now.",
+  "What's the most degrading position you've been in?",
+  "Tell the truth about your body count and your wildest partner.",
+  "What's something you've done that would end a relationship if discovered?",
+  "Describe your fantasy involving everyone in this room.",
+  "What's the most extreme pain/pleasure you've experienced?",
+  "Tell us about a time you had sex in a completely inappropriate place.",
+  "What's your most shameful sexual memory?",
+  "Describe the last time you begged for something in bed.",
+  "What's an extreme fetish you have that you've never told anyone?",
+  "Tell us about the most intense rough sex experience you've had.",
+  "What's the most objectified you've ever felt, and did you like it?",
+  "Describe your experience with the kinkiest person you've been with.",
+  "Confess something that would make everyone here see you differently."
+];
+
+// === ALL DARES MIXED ===
+const allDares = [
+  "Give your partner a sensual 2-minute massage.",
+  "Kiss your partner's neck for 30 seconds.",
+  "Whisper something dirty in your partner's ear.",
+  "Trace your finger along your partner's body for 1 minute.",
+  "Give your partner a lap dance for 1 minute.",
+  "Make out with your partner for 45 seconds.",
+  "Slowly remove one piece of your partner's clothing.",
+  "Lick your partner's lips without kissing them.",
+  "Bite your partner's neck gently.",
+  "Give your partner a foot massage while maintaining eye contact.",
+  "Text your partner something you want to do to them later.",
+  "Describe exactly how you'd seduce your partner.",
+  "Do a sexy dance in your underwear.",
+  "Let your partner choose where to kiss you for 30 seconds.",
+  "Suck on your partner's finger sensually.",
+  "Show your partner your favorite way to kiss.",
+  "Let your partner draw on your body with their finger.",
+  "Feed your partner something seductively.",
+  "Sit on your partner's lap and grind slowly for 30 seconds.",
+  "Undress your partner using only your teeth.",
+  "Kiss your partner everywhere except their lips for 1 minute.",
+  "Give your partner a sensual back massage with oil.",
+  "Blindfold your partner and kiss them in 3 different places.",
+  "Whisper all your fantasies to your partner for 2 minutes.",
+  "Let your partner touch you anywhere they want for 1 minute.",
+  "Kiss your partner's inner thighs for 30 seconds.",
+  "Grind on your partner while making out for 1 minute.",
+  "Let your partner undress you completely.",
+  "Touch yourself while your partner watches for 1 minute.",
+  "Give your partner oral pleasure for 2 minutes.",
+  "Strip down to your underwear and give a full striptease.",
+  "Let your partner spank you 10 times.",
+  "Kiss your partner's body all over for 2 minutes without using hands.",
+  "Grind on your partner naked for 2 minutes.",
+  "Let your partner tie your hands and tease you for 3 minutes.",
+  "Give your partner oral sex for 3 minutes.",
+  "Let your partner use their mouth on you anywhere for 2 minutes.",
+  "Masturbate in front of your partner for 2 minutes.",
+  "Let your partner pleasure you with their hands for 3 minutes.",
+  "69 position for 2 minutes.",
+  "Do a naked dance for your partner.",
+  "Let your partner take a body shot off you.",
+  "Sext your partner what you want to do to them right now.",
+  "Let your partner spank you while you count out loud.",
+  "Describe in detail how you'd dominate your partner.",
+  "Call your partner 'daddy/mommy' for the next 3 rounds.",
+  "Let your partner choose a toy to use on you.",
+  "Beg your partner to touch you for 30 seconds.",
+  "Let your partner record you doing something sexy.",
+  "Show your partner exactly how you masturbate.",
+  "Edge your partner three times without letting them finish.",
+  "Let your partner blindfold and restrain you for 5 minutes.",
+  "Use ice cubes on your partner's body for 2 minutes.",
+  "Give your partner a full body massage ending in oral.",
+  "Let your partner use you for their pleasure for 5 minutes.",
+  "Finger/touch your partner until they can't take it anymore.",
+  "Let your partner facefuck you or ride your face for 3 minutes.",
+  "Grind on your partner in 3 different positions.",
+  "Let your partner cover you in something and lick it off.",
+  "Use a vibrator on your partner while kissing them.",
+  "Strip completely naked and let your partner do whatever they want for 5 minutes.",
+  "Get on your knees and pleasure your partner until they say stop.",
+  "Let your partner restrain you and edge you repeatedly for 10 minutes.",
+  "Masturbate to completion while your partner watches and directs you.",
+  "Let your partner spank you 25 times as hard as they can.",
+  "Give your partner oral until they're begging you to stop.",
+  "Let your partner use any toy they want on you for 5 minutes.",
+  "Beg your partner to let you pleasure them.",
+  "Let your partner take nude photos of you in any position.",
+  "Act out your partner's wildest fantasy right now.",
+  "Let your partner tie you up and use you as they wish for 10 minutes.",
+  "Edge yourself 5 times while maintaining eye contact with your partner.",
+  "Let your partner degrade you verbally while pleasuring you.",
+  "Pleasure your partner in the way they describe for 10 minutes.",
+  "Let your partner mark your body however they want.",
+  "Call your partner and describe what you want them to do to you.",
+  "Let your partner control a remote vibrator on you for 15 minutes.",
+  "Submit completely to your partner for the next hour.",
+  "Let your partner use their mouth on every part of your body.",
+  "Recreate your favorite porn scene with your partner.",
+  "Let your partner do absolutely anything they want to you for 20 minutes.",
+  "Orgasm on command for your partner - no matter how long it takes.",
+  "Let your partner restrain you and edge you until you're crying.",
+  "Complete submission - be their personal toy for the next hour.",
+  "Beg your partner to use you and tell them exactly how.",
+  "Be your partner's slave for the rest of the night - no limits.",
+  "Let your partner mark you permanently (hickey in visible place).",
+  "Call someone while your partner pleasures you - don't make a sound.",
+  "Fulfill your partner's darkest fantasy right now - no questions.",
+  "Do whatever your partner demands without question for 1 hour.",
+  "Let your partner use degrading language while using your body.",
+  "Submit to the most intense experience your partner can create.",
+  "Be recorded doing the most extreme thing you're willing to do.",
+  "Complete and total surrender - your partner owns you for the night."
+];
+
+// === EXTREME CHALLENGES ===
+const extremeChallenges = [
+  {type: "EXTREME TRUTH", text: "Confess your darkest sexual fantasy in explicit detail - nothing held back."},
+  {type: "EXTREME DARE", text: "Complete submission - let your partner do anything they want for 30 minutes."},
+  {type: "EXTREME TRUTH", text: "Tell the truth about every person you've fantasized about while with your current partner."},
+  {type: "EXTREME DARE", text: "Pleasure yourself to completion while your partner films and directs - they control everything."},
+  {type: "EXTREME TRUTH", text: "Describe the most shameful thing that turns you on - be completely honest."},
+  {type: "EXTREME DARE", text: "Let your partner mark your body in a visible place that will last for days."},
+  {type: "EXTREME TRUTH", text: "Admit something you've never told your partner that could change everything."},
+  {type: "EXTREME DARE", text: "Beg your partner to degrade you and use you however they see fit."},
+  {type: "EXTREME TRUTH", text: "Confess who in your life you'd cheat with if there were no consequences."},
+  {type: "EXTREME DARE", text: "Orgasm exactly when your partner tells you to - failure means punishment."},
+  {type: "EXTREME TRUTH", text: "Tell the complete truth about your body count and your wildest encounters."},
+  {type: "EXTREME DARE", text: "Submit to public play - do something risky where you might get caught."},
+];
+
+// === WILDCARD BONUSES ===
+const wildcardBonuses = [
+  {title: "🎲 DOUBLE DOWN", text: "Complete this challenge AND the next one for double heat!"},
+  {title: "🔥 HEAT WAVE", text: "This challenge is worth TRIPLE heat points!"},
+  {title: "👥 BOTH PLAYERS", text: "Both of you must complete this challenge together!"},
+  {title: "⏰ SPEED ROUND", text: "You have half the normal time - GO!"},
+  {title: "🎭 ROLE REVERSAL", text: "Switch players - the other person does this!"},
+  {title: "💎 JACKPOT", text: "Complete this for an instant +50 heat points!"},
+  {title: "⭐ WILD CHOICE", text: "You get to choose: Truth or Dare!"},
+  {title: "🎁 FREE PASS", text: "You can skip this with no penalty!"},
+];
+
+// === GAME STATE ===
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let currentPlayerIndex = 0;
+let roundCount = 1;
+let completedCount = 0;
+let isSpinning = false;
+let usedTruths = [];
+let usedDares = [];
+let usedExtremes = [];
+
+// === SETUP ===
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+
+  updateCurrentPlayer();
+  createParticles('🌙', 20);
+});
+
+function updateCurrentPlayer() {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  document.getElementById('currentPlayerName').textContent = playerName;
+}
+
+// === SPIN WHEEL ===
+document.getElementById('spinBtn').addEventListener('click', spinWheel);
+
+function spinWheel() {
+  if (isSpinning) return;
+
+  isSpinning = true;
+  document.getElementById('spinBtn').disabled = true;
+
+  const wheel = document.getElementById('wheel');
+  wheel.classList.add('spinning');
+
+  // Random spins between 5-10 full rotations + random position
+  const baseRotation = 360 * (5 + Math.floor(Math.random() * 6));
+  const sections = [0, 90, 180, 270]; // Truth, Dare, Extreme, Wildcard
+  const landingSection = sections[Math.floor(Math.random() * sections.length)];
+  const finalRotation = baseRotation + landingSection;
+
+  wheel.style.transform = `rotate(${finalRotation}deg)`;
+
+  createParticles('🎰', 30);
+
+  setTimeout(() => {
+    wheel.classList.remove('spinning');
+    isSpinning = false;
+
+    // Determine what was landed on (accounting for pointer at top)
+    const normalizedAngle = (360 - (finalRotation % 360)) % 360;
+    let result;
+
+    if (normalizedAngle >= 315 || normalizedAngle < 45) {
+      result = 'truth';
+    } else if (normalizedAngle >= 45 && normalizedAngle < 135) {
+      result = 'dare';
+    } else if (normalizedAngle >= 135 && normalizedAngle < 225) {
+      result = 'extreme';
+    } else {
+      result = 'wildcard';
+    }
+
+    showChallenge(result);
+  }, 4000);
+}
+
+function getRandomUnused(array, usedArray) {
+  // If all have been used, reset
+  if (usedArray.length >= array.length) {
+    usedArray.length = 0;
+  }
+
+  // Get available items
+  let available = array.filter((item, index) => !usedArray.includes(index));
+
+  // Pick random from available
+  const randomItem = available[Math.floor(Math.random() * available.length)];
+  const originalIndex = array.indexOf(randomItem);
+
+  // Mark as used
+  usedArray.push(originalIndex);
+
+  return randomItem;
+}
+
+function showChallenge(type) {
+  let challenge;
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+
+  if (type === 'wildcard') {
+    // Wildcard bonus
+    const wildcard = wildcardBonuses[Math.floor(Math.random() * wildcardBonuses.length)];
+    alert(`🌟 WILDCARD! 🌟\n\n${wildcard.title}\n${wildcard.text}`);
+    createParticles('⭐', 50);
+
+    // After wildcard, spin again
+    document.getElementById('spinBtn').disabled = false;
+    return;
+  } else if (type === 'extreme') {
+    challenge = getRandomUnused(extremeChallenges, usedExtremes);
+  } else if (type === 'truth') {
+    challenge = {
+      type: 'TRUTH',
+      text: getRandomUnused(allTruths, usedTruths)
+    };
+  } else {
+    challenge = {
+      type: 'DARE',
+      text: getRandomUnused(allDares, usedDares)
+    };
+  }
+
+  displayChallenge(challenge, playerName);
+}
+
+function displayChallenge(challenge, playerName) {
+  document.getElementById('wheelContainer').style.display = 'none';
+  document.getElementById('challengeDisplay').style.display = 'block';
+  document.getElementById('challengeType').textContent = challenge.type;
+  document.getElementById('challengeText').textContent = challenge.text;
+  document.getElementById('challengePlayer').textContent = `${playerName}'s Challenge`;
+
+  document.getElementById('completeBtn').style.display = 'inline-block';
+  document.getElementById('skipBtn').style.display = 'inline-block';
+  document.getElementById('spinBtn').style.display = 'none';
+
+  createParticles(challenge.type.includes('EXTREME') ? '💥' : challenge.type.includes('TRUTH') ? '💙' : '💜', 25);
+}
+
+// === COMPLETE/SKIP ===
+document.getElementById('completeBtn').addEventListener('click', () => {
+  completedCount++;
+  updateStats();
+  createParticles('✨', 30);
+
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('skipBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+});
+
+document.getElementById('skipBtn').addEventListener('click', () => {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  alert(`🍺 ${playerName} DRINKS! 🍺\n\nPENALTY: Take a drink for refusing the challenge!`);
+  createParticles('🍺', 30);
+
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('skipBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  // Switch player
+  currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+  roundCount++;
+
+  updateCurrentPlayer();
+  updateStats();
+  resetChallenge();
+});
+
+function updateStats() {
+  document.getElementById('roundCount').textContent = roundCount;
+  document.getElementById('completedCount').textContent = completedCount;
+}
+
+function resetChallenge() {
+  document.getElementById('challengeDisplay').style.display = 'none';
+  document.getElementById('wheelContainer').style.display = 'block';
+  document.getElementById('nextBtn').style.display = 'none';
+  document.getElementById('spinBtn').style.display = 'inline-block';
+  document.getElementById('spinBtn').disabled = false;
+}
+
+// === NEW GAME ===
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? All progress will be lost.')) {
+    location.reload();
+  }
+});
+
+// === PARTICLES ===
+function createParticles(emoji, count = 15) {
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * window.innerWidth + 'px';
+    particle.style.top = window.innerHeight / 2 + 'px';
+    particle.style.fontSize = (Math.random() * 25 + 20) + 'px';
+    particle.textContent = emoji;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 3000);
+  }
+}
+</script>
+</body>
+</html>

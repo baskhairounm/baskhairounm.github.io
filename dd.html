@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dice of Desire - Intimate Couples Game</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a0000 0%, #2d0a0a 50%, #1a0000 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  h1 {
+    font-size: clamp(32px, 7vw, 56px);
+    margin-bottom:10px;
+    text-shadow: 0 0 20px #ff6b35, 0 0 40px #ff006e;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    from {text-shadow: 0 0 20px #ff6b35, 0 0 30px #ff006e;}
+    to {text-shadow: 0 0 30px #ff6b35, 0 0 50px #ff006e, 0 0 60px #ff006e;}
+  }
+
+  .subtitle {
+    font-size: clamp(14px, 3vw, 18px);
+    color:#ffb3ba;
+    margin-bottom:30px;
+    opacity:0.9;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:45px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.12) 0%,
+      rgba(255,0,110,0.12) 100%);
+    border-radius:25px;
+    border:3px solid rgba(255,107,53,0.4);
+    backdrop-filter:blur(15px);
+    box-shadow:0 20px 60px rgba(0,0,0,0.6),
+               inset 0 2px 10px rgba(255,255,255,0.05);
+  }
+
+  #setupScreen h2 {
+    margin-bottom:30px;
+    color:#ff6b35;
+    text-shadow:0 2px 10px rgba(255,107,53,0.5);
+    font-size: clamp(24px, 5vw, 32px);
+  }
+
+  .mode-selection {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin:30px 0;
+  }
+
+  .mode-card {
+    padding:20px;
+    background:rgba(0,0,0,0.4);
+    border:2px solid rgba(255,107,53,0.3);
+    border-radius:15px;
+    cursor:pointer;
+    transition:all 0.3s ease;
+  }
+
+  .mode-card:hover {
+    border-color:#ff6b35;
+    background:rgba(255,107,53,0.15);
+    transform:translateY(-5px);
+    box-shadow:0 10px 30px rgba(255,107,53,0.4);
+  }
+
+  .mode-card.selected {
+    border-color:#ff6b35;
+    background:rgba(255,107,53,0.25);
+    box-shadow:0 0 25px rgba(255,107,53,0.6);
+  }
+
+  .mode-card h3 {
+    color:#ff6b35;
+    margin-bottom:10px;
+    font-size:clamp(16px, 3vw, 20px);
+  }
+
+  .mode-card p {
+    font-size:clamp(12px, 2.5vw, 14px);
+    color:#ffb3ba;
+    line-height:1.4;
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  .game-info {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+    padding:15px 25px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.15) 0%,
+      rgba(255,0,110,0.15) 100%);
+    border-radius:15px;
+    border:2px solid rgba(255,107,53,0.4);
+    box-shadow:0 5px 20px rgba(0,0,0,0.5);
+  }
+
+  .game-info-item {
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .game-info-item span {
+    color:#ff6b35;
+    font-weight:700;
+  }
+
+  /* Dice Container */
+  .dice-container {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
+    gap:25px;
+    margin:40px 0;
+    padding:30px;
+    background:rgba(0,0,0,0.3);
+    border-radius:20px;
+    border:2px solid rgba(255,107,53,0.3);
+  }
+
+  .dice-box {
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.1) 0%,
+      rgba(255,0,110,0.1) 100%);
+    padding:25px;
+    border-radius:15px;
+    border:2px solid rgba(255,107,53,0.4);
+    box-shadow:0 8px 25px rgba(0,0,0,0.5);
+  }
+
+  .dice-label {
+    font-size:clamp(16px, 3vw, 22px);
+    color:#ff6b35;
+    margin-bottom:15px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:2px;
+  }
+
+  .dice {
+    width:120px;
+    height:120px;
+    margin:20px auto;
+    background:linear-gradient(135deg, #fff 0%, #e0e0e0 100%);
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(20px, 4vw, 32px);
+    font-weight:bold;
+    color:#8b0000;
+    box-shadow:0 10px 30px rgba(0,0,0,0.7);
+    transition:all 0.3s ease;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .dice.rolling {
+    animation:diceRoll 0.6s ease-out;
+  }
+
+  @keyframes diceRoll {
+    0% {transform:rotateX(0deg) rotateY(0deg) scale(1);}
+    25% {transform:rotateX(180deg) rotateY(180deg) scale(1.1);}
+    50% {transform:rotateX(360deg) rotateY(360deg) scale(1);}
+    75% {transform:rotateX(540deg) rotateY(540deg) scale(1.1);}
+    100% {transform:rotateX(720deg) rotateY(720deg) scale(1);}
+  }
+
+  .dice-result {
+    margin-top:15px;
+    font-size:clamp(14px, 3vw, 18px);
+    color:#ffb3ba;
+    min-height:50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+  }
+
+  /* Result Display */
+  .result-display {
+    margin:30px auto;
+    padding:30px;
+    max-width:800px;
+    min-height:150px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.2) 0%,
+      rgba(255,0,110,0.25) 50%,
+      rgba(255,107,53,0.2) 100%);
+    border-radius:20px;
+    border:3px solid rgba(255,107,53,0.5);
+    box-shadow:0 15px 50px rgba(255,107,53,0.4),
+               inset 0 2px 10px rgba(255,255,255,0.1);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .result-display::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,0.1),
+      transparent);
+    animation:shine 3s infinite;
+  }
+
+  @keyframes shine {
+    0% {left:-100%;}
+    50%, 100% {left:100%;}
+  }
+
+  .result-title {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#ff6b35;
+    margin-bottom:15px;
+    font-weight:700;
+  }
+
+  .result-text {
+    font-size:clamp(18px, 3.5vw, 24px);
+    line-height:1.6;
+    color:#fff;
+  }
+
+  .result-timer {
+    margin-top:20px;
+    font-size:clamp(16px, 3vw, 20px);
+    color:#ffff00;
+    font-weight:700;
+  }
+
+  /* Build Mode History */
+  .build-history {
+    margin:20px auto;
+    padding:20px;
+    max-width:800px;
+    background:rgba(0,0,0,0.4);
+    border-radius:15px;
+    border:2px solid rgba(255,107,53,0.3);
+  }
+
+  .build-history h3 {
+    color:#ff6b35;
+    margin-bottom:15px;
+    font-size:clamp(18px, 3.5vw, 22px);
+  }
+
+  .history-item {
+    padding:10px;
+    margin:8px 0;
+    background:rgba(255,107,53,0.1);
+    border-radius:8px;
+    border-left:4px solid #ff6b35;
+    text-align:left;
+    font-size:clamp(14px, 2.8vw, 16px);
+  }
+
+  /* Buttons */
+  button {
+    padding:clamp(14px, 2.5vw, 18px) clamp(28px, 5vw, 50px);
+    font-size:clamp(16px, 3.2vw, 20px);
+    margin:12px;
+    border:2px solid rgba(0,0,0,0.3);
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s ease;
+    box-shadow:0 6px 25px rgba(0,0,0,0.6),
+               inset 0 1px 3px rgba(255,255,255,0.2);
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    position:relative;
+    overflow:hidden;
+    z-index:1;
+  }
+
+  button::before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:0;
+    height:0;
+    border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    transform:translate(-50%, -50%);
+    transition:width 0.6s, height 0.6s;
+    z-index:0;
+  }
+
+  button:hover::before {
+    width:300px;
+    height:300px;
+  }
+
+  button:hover {
+    transform:translateY(-4px);
+    box-shadow:0 10px 35px rgba(0,0,0,0.8),
+               inset 0 1px 3px rgba(255,255,255,0.3);
+  }
+
+  button:active {
+    transform:translateY(-1px);
+  }
+
+  #startGameBtn {background:linear-gradient(135deg, #ff6b35 0%, #ff006e 100%); color:#fff;}
+  #rollDiceBtn {background:linear-gradient(135deg, #ffff00 0%, #ffa500 100%); color:#000;}
+  #nextRollBtn {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color:#000;}
+  #completeBtn {background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%); color:#fff;}
+  #newGameBtn {background:linear-gradient(135deg, #888 0%, #666 100%); color:#fff;}
+
+  /* Timer Display */
+  .timer-display {
+    margin:20px auto;
+    max-width:400px;
+  }
+
+  .timer {
+    font-size:clamp(48px, 10vw, 72px);
+    color:#ffff00;
+    text-shadow:0 0 20px #ff0;
+    font-weight:bold;
+    margin:15px 0;
+  }
+
+  .timer-bar {
+    width:100%;
+    height:25px;
+    background:rgba(255,255,255,0.1);
+    border-radius:12px;
+    overflow:hidden;
+  }
+
+  .timer-fill {
+    height:100%;
+    background:linear-gradient(90deg, #ff0000 0%, #ffff00 50%, #00ff00 100%);
+    transition:width 1s linear;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(255,255,0,0.8);
+  }
+
+  /* Particles */
+  .particle {
+    position:fixed;
+    pointer-events:none;
+    animation:float 3s ease-out forwards;
+    z-index:1000;
+  }
+
+  @keyframes float {
+    0% {opacity:1; transform:translateY(0) scale(1);}
+    100% {opacity:0; transform:translateY(-200px) scale(0);}
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .mode-selection {
+      grid-template-columns:1fr;
+    }
+
+    .dice-container {
+      grid-template-columns:1fr;
+      gap:15px;
+      padding:15px;
+    }
+
+    .dice {
+      width:100px;
+      height:100px;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>🎲 Dice of Desire 🎲</h1>
+<p class="subtitle">Roll the dice and ignite the passion</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2>Choose Your Game Mode</h2>
+
+  <div class="mode-selection">
+    <div class="mode-card" data-mode="quick">
+      <h3>⚡ Quick Mode</h3>
+      <p>Roll once, 2 minutes of passion. Perfect for spontaneous fun!</p>
+    </div>
+
+    <div class="mode-card" data-mode="marathon">
+      <h3>🔥 Marathon Mode</h3>
+      <p>Roll 5 times, complete all within 15 minutes. Endurance challenge!</p>
+    </div>
+
+    <div class="mode-card" data-mode="build">
+      <h3>📈 Build Mode</h3>
+      <p>Each roll adds to previous. Stack pleasure layer by layer!</p>
+    </div>
+
+    <div class="mode-card" data-mode="memory">
+      <h3>🧠 Memory Mode</h3>
+      <p>Repeat all previous rolls before adding new one. Ultimate challenge!</p>
+    </div>
+  </div>
+
+  <button id="startGameBtn" style="display:none;">Start Game</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-info">
+    <div class="game-info-item">Mode: <span id="currentMode">Quick</span></div>
+    <div class="game-info-item" id="roundInfo">Round: <span>1</span></div>
+    <div class="game-info-item" id="completedInfo">Completed: <span>0</span></div>
+  </div>
+
+  <div class="dice-container">
+    <div class="dice-box">
+      <div class="dice-label">👥 WHO</div>
+      <div class="dice" id="whoDice">?</div>
+      <div class="dice-result" id="whoResult">Roll to find out...</div>
+    </div>
+
+    <div class="dice-box">
+      <div class="dice-label">💫 WHAT</div>
+      <div class="dice" id="whatDice">?</div>
+      <div class="dice-result" id="whatResult">Roll to find out...</div>
+    </div>
+
+    <div class="dice-box">
+      <div class="dice-label">📍 WHERE</div>
+      <div class="dice" id="whereDice">?</div>
+      <div class="dice-result" id="whereResult">Roll to find out...</div>
+    </div>
+  </div>
+
+  <div class="result-display" id="resultDisplay">
+    <div class="result-title">Ready to roll?</div>
+    <div class="result-text">Click "Roll Dice" to discover your intimate challenge!</div>
+  </div>
+
+  <div class="timer-display" id="timerDisplay" style="display:none;">
+    <div class="timer" id="timer">2:00</div>
+    <div class="timer-bar">
+      <div class="timer-fill" id="timerFill"></div>
+    </div>
+  </div>
+
+  <div class="build-history" id="buildHistory" style="display:none;">
+    <h3>🔨 Build Stack</h3>
+    <div id="historyList"></div>
+  </div>
+
+  <div style="margin-top:30px;">
+    <button id="rollDiceBtn">🎲 Roll Dice</button>
+    <button id="nextRollBtn" style="display:none;">Next Roll</button>
+    <button id="completeBtn" style="display:none;">✅ Complete & Continue</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+
+<script>
+// === DICE OPTIONS ===
+const whoOptions = [
+  {emoji: "👉", text: "You give", description: "You pleasure your partner"},
+  {emoji: "👈", text: "You receive", description: "Your partner pleasures you"},
+  {emoji: "💑", text: "Both", description: "Pleasure each other simultaneously"},
+  {emoji: "🎭", text: "Partner's choice", description: "Let your partner decide who"},
+  {emoji: "🎲", text: "Dice decides", description: "Roll again: Even=Give, Odd=Receive"},
+  {emoji: "🔄", text: "Switch roles", description: "Swap halfway through"}
+];
+
+const whatOptions = [
+  {emoji: "💋", text: "Kiss", description: "Deep, passionate kissing"},
+  {emoji: "👐", text: "Touch", description: "Sensual touching and caressing"},
+  {emoji: "👅", text: "Lick", description: "Use your tongue"},
+  {emoji: "😈", text: "Bite", description: "Gentle bites and nibbles"},
+  {emoji: "💆", text: "Massage", description: "Sensual massage"},
+  {emoji: "🔥", text: "Tease", description: "Tease without completion"},
+  {emoji: "💃", text: "Grind", description: "Body grinding and friction"},
+  {emoji: "🫦", text: "Oral", description: "Oral pleasure"}
+];
+
+const whereOptions = [
+  {emoji: "💋", text: "Neck", description: "Kiss, lick, or bite the neck"},
+  {emoji: "👄", text: "Lips", description: "Focus on the lips"},
+  {emoji: "🫀", text: "Chest", description: "Chest and nipples"},
+  {emoji: "🌟", text: "Back", description: "Entire back area"},
+  {emoji: "🦵", text: "Thighs", description: "Inner and outer thighs"},
+  {emoji: "🍑", text: "Genitals", description: "Direct genital stimulation"},
+  {emoji: "🎯", text: "Anywhere", description: "Your choice of location"},
+  {emoji: "✨", text: "Full body", description: "Entire body exploration"},
+  {emoji: "❓", text: "Surprise me", description: "Partner picks the spot"}
+];
+
+// === GAME STATE ===
+let currentMode = "";
+let currentRound = 1;
+let completedRounds = 0;
+let totalRounds = 1;
+let buildStack = [];
+let memoryStack = [];
+let timerInterval = null;
+let currentWho = null;
+let currentWhat = null;
+let currentWhere = null;
+
+// === MODE SELECTION ===
+document.querySelectorAll('.mode-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    currentMode = card.dataset.mode;
+    document.getElementById('startGameBtn').style.display = 'inline-block';
+  });
+});
+
+// === START GAME ===
+document.getElementById('startGameBtn').addEventListener('click', () => {
+  if (!currentMode) {
+    alert('Please select a game mode first!');
+    return;
+  }
+
+  // Set mode-specific values
+  switch(currentMode) {
+    case 'quick':
+      totalRounds = 1;
+      break;
+    case 'marathon':
+      totalRounds = 5;
+      break;
+    case 'build':
+      totalRounds = 999; // Unlimited until they stop
+      document.getElementById('buildHistory').style.display = 'block';
+      break;
+    case 'memory':
+      totalRounds = 999; // Unlimited until they stop
+      document.getElementById('buildHistory').style.display = 'block';
+      break;
+  }
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  document.getElementById('currentMode').textContent = getModeName(currentMode);
+  updateRoundDisplay();
+});
+
+function getModeName(mode) {
+  const names = {
+    'quick': '⚡ Quick Mode',
+    'marathon': '🔥 Marathon Mode',
+    'build': '📈 Build Mode',
+    'memory': '🧠 Memory Mode'
+  };
+  return names[mode];
+}
+
+// === DICE ROLLING ===
+document.getElementById('rollDiceBtn').addEventListener('click', rollAllDice);
+
+function rollAllDice() {
+  // Disable button during roll
+  document.getElementById('rollDiceBtn').disabled = true;
+
+  // Add rolling animation
+  document.getElementById('whoDice').classList.add('rolling');
+  document.getElementById('whatDice').classList.add('rolling');
+  document.getElementById('whereDice').classList.add('rolling');
+
+  // Roll each die
+  setTimeout(() => {
+    currentWho = rollDie('who', whoOptions);
+    currentWhat = rollDie('what', whatOptions);
+    currentWhere = rollDie('where', whereOptions);
+
+    // Remove rolling animation
+    setTimeout(() => {
+      document.getElementById('whoDice').classList.remove('rolling');
+      document.getElementById('whatDice').classList.remove('rolling');
+      document.getElementById('whereDice').classList.remove('rolling');
+
+      // Display results
+      displayResults();
+
+      // Re-enable button
+      document.getElementById('rollDiceBtn').disabled = false;
+    }, 100);
+  }, 600);
+
+  createParticles('🎲', 15);
+}
+
+function rollDie(type, options) {
+  const randomIndex = Math.floor(Math.random() * options.length);
+  const result = options[randomIndex];
+
+  // Update dice display
+  const diceId = type + 'Dice';
+  const resultId = type + 'Result';
+
+  document.getElementById(diceId).textContent = result.emoji;
+  document.getElementById(resultId).textContent = result.text;
+
+  return result;
+}
+
+function displayResults() {
+  const resultDisplay = document.getElementById('resultDisplay');
+  let resultHTML = '';
+
+  // Build the result text based on mode
+  if (currentMode === 'build') {
+    // Add to build stack
+    const newAction = `${currentWho.text}: ${currentWhat.text} ${currentWhere.text}`;
+    buildStack.push(newAction);
+
+    resultHTML = `
+      <div class="result-title">🔨 Build Stack - Layer ${buildStack.length}</div>
+      <div class="result-text">
+        ${buildStack.map((action, i) => `<strong>Layer ${i + 1}:</strong> ${action}`).join('<br>')}
+      </div>
+      <div class="result-timer">Complete all layers in order!</div>
+    `;
+
+    updateBuildHistory();
+
+  } else if (currentMode === 'memory') {
+    // Add to memory stack
+    const newAction = `${currentWho.text}: ${currentWhat.text} ${currentWhere.text}`;
+    memoryStack.push(newAction);
+
+    resultHTML = `
+      <div class="result-title">🧠 Memory Challenge - Round ${memoryStack.length}</div>
+      <div class="result-text">
+        <strong>Repeat in order:</strong><br>
+        ${memoryStack.map((action, i) => `${i + 1}. ${action}`).join('<br>')}
+      </div>
+      <div class="result-timer">Remember and perform all actions in sequence!</div>
+    `;
+
+    updateBuildHistory();
+
+  } else {
+    // Quick or Marathon mode
+    let timeLimit = currentMode === 'quick' ? '2 minutes' : '3 minutes';
+
+    resultHTML = `
+      <div class="result-title">Your Challenge</div>
+      <div class="result-text">
+        <strong>${currentWho.text}:</strong> ${currentWhat.description}<br>
+        <strong>On:</strong> ${currentWhere.description}<br>
+        <strong>Duration:</strong> ${timeLimit}
+      </div>
+    `;
+  }
+
+  resultDisplay.innerHTML = resultHTML;
+
+  // Show timer and complete button
+  document.getElementById('timerDisplay').style.display = 'block';
+  startTimer(currentMode === 'quick' ? 120 : 180);
+
+  document.getElementById('rollDiceBtn').style.display = 'none';
+  document.getElementById('completeBtn').style.display = 'inline-block';
+}
+
+function updateBuildHistory() {
+  const historyList = document.getElementById('historyList');
+  const stack = currentMode === 'build' ? buildStack : memoryStack;
+
+  historyList.innerHTML = stack.map((action, i) =>
+    `<div class="history-item">${i + 1}. ${action}</div>`
+  ).join('');
+}
+
+// === TIMER ===
+function startTimer(seconds) {
+  let timeLeft = seconds;
+  const totalTime = seconds;
+
+  updateTimerDisplay(timeLeft);
+  document.getElementById('timerFill').style.width = '100%';
+
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay(timeLeft);
+
+    const percentage = (timeLeft / totalTime) * 100;
+    document.getElementById('timerFill').style.width = percentage + '%';
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      createParticles('✨', 25);
+      // Timer doesn't auto-advance, player must click Complete
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  document.getElementById('timer').textContent =
+    `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// === COMPLETE ROUND ===
+document.getElementById('completeBtn').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  completedRounds++;
+  currentRound++;
+
+  updateRoundDisplay();
+
+  // Check if game mode is complete
+  if (currentMode === 'quick' || (currentMode === 'marathon' && completedRounds >= totalRounds)) {
+    endGame();
+  } else {
+    // Continue to next round
+    document.getElementById('rollDiceBtn').style.display = 'inline-block';
+    document.getElementById('completeBtn').style.display = 'none';
+    document.getElementById('timerDisplay').style.display = 'none';
+
+    document.getElementById('resultDisplay').innerHTML = `
+      <div class="result-title">Ready for Round ${currentRound}?</div>
+      <div class="result-text">Click "Roll Dice" for your next challenge!</div>
+    `;
+
+    createParticles('🎉', 20);
+  }
+});
+
+function updateRoundDisplay() {
+  document.getElementById('roundInfo').innerHTML = `Round: <span>${currentRound}</span>`;
+  document.getElementById('completedInfo').innerHTML = `Completed: <span>${completedRounds}</span>`;
+}
+
+function endGame() {
+  document.getElementById('resultDisplay').innerHTML = `
+    <div class="result-title">🎊 Game Complete! 🎊</div>
+    <div class="result-text">
+      You completed ${completedRounds} rounds of passion!<br>
+      Ready for another round?
+    </div>
+  `;
+
+  document.getElementById('rollDiceBtn').style.display = 'none';
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('timerDisplay').style.display = 'none';
+
+  createParticles('🔥', 50);
+}
+
+// === NEW GAME ===
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? Current progress will be lost.')) {
+    location.reload();
+  }
+});
+
+// === PARTICLES ===
+function createParticles(emoji, count = 15) {
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * window.innerWidth + 'px';
+    particle.style.top = window.innerHeight / 2 + 'px';
+    particle.style.fontSize = (Math.random() * 20 + 20) + 'px';
+    particle.textContent = emoji;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 3000);
+  }
+}
+</script>
+</body>
+</html>

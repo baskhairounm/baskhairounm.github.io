@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couples Trivia: How Well Do You Know Each Other? 💑</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f857a6 0%, #ff5858 50%, #f857a6 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(32px, 7vw, 56px);
+    margin-bottom:10px;
+    color:#fff;
+    text-shadow:0 0 20px rgba(255, 88, 88, 0.8);
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#ffe0e9;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(255, 88, 88, 0.2);
+    border-radius:20px;
+    border:2px solid rgba(255, 88, 88, 0.4);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#ffe0e9;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(255, 88, 88, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.3);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#ffe0e9;
+    box-shadow:0 0 15px rgba(255, 224, 233, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    display:flex;
+    justify-content:space-between;
+    padding:20px;
+    background:rgba(255, 88, 88, 0.2);
+    border-radius:15px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+
+  .stat-box {
+    font-size:clamp(14px, 3vw, 18px);
+  }
+
+  .stat-box span {
+    color:#ffe0e9;
+    font-weight:700;
+  }
+
+  .question-card {
+    margin:40px auto;
+    padding:50px 40px;
+    background:rgba(255, 88, 88, 0.2);
+    border-radius:20px;
+    border:3px solid rgba(255, 88, 88, 0.4);
+    min-height:300px;
+  }
+
+  .question-text {
+    font-size:clamp(22px, 5vw, 32px);
+    line-height:1.5;
+    color:#fff;
+    margin-bottom:40px;
+    font-weight:500;
+  }
+
+  .answer-inputs {
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    margin:30px 0;
+  }
+
+  .answer-input-group {
+    background:rgba(0,0,0,0.3);
+    padding:20px;
+    border-radius:12px;
+    border:2px solid rgba(255, 88, 88, 0.3);
+  }
+
+  .answer-input-label {
+    display:block;
+    margin-bottom:12px;
+    color:#ffe0e9;
+    font-size:clamp(16px, 3.5vw, 20px);
+    font-weight:700;
+  }
+
+  .answer-input-group input {
+    width:100%;
+    padding:15px;
+    border:2px solid rgba(255, 88, 88, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.4);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 18px);
+  }
+
+  .answer-input-group input:focus {
+    outline:none;
+    border-color:#ffe0e9;
+  }
+
+  .reveal-section {
+    display:none;
+    margin:30px 0;
+    padding:30px;
+    background:rgba(0,0,0,0.4);
+    border-radius:15px;
+  }
+
+  .reveal-section.show {
+    display:block;
+  }
+
+  .answer-comparison {
+    display:flex;
+    justify-content:space-around;
+    gap:20px;
+    margin:20px 0;
+    flex-wrap:wrap;
+  }
+
+  .answer-box {
+    flex:1;
+    min-width:200px;
+    padding:20px;
+    background:rgba(255, 88, 88, 0.3);
+    border-radius:12px;
+    border:2px solid;
+  }
+
+  .answer-box.match {
+    border-color:#00ff88;
+    box-shadow:0 0 20px rgba(0, 255, 136, 0.4);
+  }
+
+  .answer-box.no-match {
+    border-color:#ff4444;
+  }
+
+  .answer-box-name {
+    font-size:clamp(14px, 3vw, 18px);
+    margin-bottom:10px;
+    font-weight:700;
+    color:#ffe0e9;
+  }
+
+  .answer-box-text {
+    font-size:clamp(16px, 3.5vw, 22px);
+    font-weight:600;
+  }
+
+  .match-status {
+    margin-top:20px;
+    padding:15px;
+    border-radius:10px;
+    font-size:clamp(18px, 4vw, 24px);
+    font-weight:700;
+  }
+
+  .match-status.match {
+    background:#00ff88;
+    color:#000;
+  }
+
+  .match-status.no-match {
+    background:#ff4444;
+    color:#fff;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(255, 88, 88, 0.5);
+    border-radius:12px;
+    background:#ff5858;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(255, 88, 88, 0.6);
+  }
+
+  #revealBtn {display:none;}
+  #nextBtn {display:none;}
+
+  @media (max-width: 768px) {
+    .game-header {
+      flex-direction:column;
+      text-align:center;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="content">
+<h1>💑 Couples Trivia 💑</h1>
+<p class="subtitle">"How well do you really know each other?"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2 style="color:#ffe0e9; margin-bottom:30px;">Enter Names</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player...">
+  </div>
+
+  <button id="startBtn">Start Trivia 💑</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="stat-box">Question: <span id="questionCount">1</span></div>
+    <div class="stat-box">Matches: <span id="matchCount">0</span></div>
+    <div class="stat-box">Misses: <span id="missCount">0</span></div>
+  </div>
+
+  <div class="question-card">
+    <div class="question-text" id="questionText">Loading...</div>
+
+    <div class="answer-inputs" id="answerInputs">
+      <div class="answer-input-group">
+        <label class="answer-input-label" id="p1Label">Player 1's Answer:</label>
+        <input type="text" id="p1Answer" placeholder="Type your answer...">
+      </div>
+      <div class="answer-input-group">
+        <label class="answer-input-label" id="p2Label">Player 2's Answer:</label>
+        <input type="text" id="p2Answer" placeholder="Type your answer...">
+      </div>
+    </div>
+
+    <div class="reveal-section" id="revealSection">
+      <div class="answer-comparison" id="answerComparison"></div>
+      <div class="match-status" id="matchStatus"></div>
+    </div>
+  </div>
+
+  <div>
+    <button id="submitBtn">Submit Answers</button>
+    <button id="revealBtn">Reveal Results</button>
+    <button id="nextBtn">Next Question ➡️</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Questions Database
+const questions = [
+  // About Partner - General
+  {q: "What is {partner}'s favorite color?", type: "about"},
+  {q: "What is {partner}'s biggest fear?", type: "about"},
+  {q: "What is {partner}'s dream vacation destination?", type: "about"},
+  {q: "What is {partner}'s favorite food?", type: "about"},
+  {q: "What is {partner}'s biggest pet peeve?", type: "about"},
+  {q: "What does {partner} do when they're stressed?", type: "about"},
+  {q: "What is {partner}'s favorite movie or TV show?", type: "about"},
+  {q: "What is {partner}'s hidden talent?", type: "about"},
+
+  // Relationship
+  {q: "Where did you two first meet?", type: "both"},
+  {q: "What was your first date?", type: "both"},
+  {q: "What is {partner}'s favorite thing about you?", type: "about"},
+  {q: "What is the most romantic thing {partner} has done for you?", type: "about"},
+  {q: "What song reminds you of {partner}?", type: "about"},
+  {q: "What is {partner}'s love language?", type: "about"},
+  {q: "What was your first impression of {partner}?", type: "about"},
+
+  // Intimate/Spicy
+  {q: "What is {partner}'s favorite position?", type: "about"},
+  {q: "What turns {partner} on the most?", type: "about"},
+  {q: "What is {partner}'s biggest fantasy?", type: "about"},
+  {q: "What does {partner} find most attractive about you?", type: "about"},
+  {q: "What is {partner}'s favorite thing you do in bed?", type: "about"},
+  {q: "What time of day does {partner} prefer to be intimate?", type: "about"},
+  {q: "What is {partner}'s favorite type of foreplay?", type: "about"},
+  {q: "Where is {partner}'s favorite place to be kissed?", type: "about"},
+  {q: "What is one thing {partner} wants to try but hasn't told you?", type: "about"},
+  {q: "How many times per week does {partner} ideally want to have sex?", type: "about"},
+];
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let questionCount = 1;
+let matchCount = 0;
+let missCount = 0;
+let usedQuestions = [];
+let currentQuestion = null;
+let currentAnswerer = 1;
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+
+  loadQuestion();
+});
+
+// Load Question
+function loadQuestion() {
+  // Reset if all questions used
+  if (usedQuestions.length >= questions.length) {
+    usedQuestions = [];
+  }
+
+  // Get unused question
+  let available = questions.filter((q, i) => !usedQuestions.includes(i));
+  currentQuestion = available[Math.floor(Math.random() * available.length)];
+  let index = questions.indexOf(currentQuestion);
+  usedQuestions.push(index);
+
+  // Alternate who answers about whom
+  currentAnswerer = currentAnswerer === 1 ? 2 : 1;
+  const asker = currentAnswerer === 1 ? player1Name : player2Name;
+  const answerer = currentAnswerer === 1 ? player2Name : player1Name;
+
+  let questionText = currentQuestion.q;
+  questionText = questionText.replace('{partner}', answerer);
+
+  document.getElementById('questionText').textContent = questionText;
+  document.getElementById('p1Label').textContent = `${player1Name}'s Answer:`;
+  document.getElementById('p2Label').textContent = `${player2Name}'s Answer:`;
+
+  // Reset inputs
+  document.getElementById('p1Answer').value = '';
+  document.getElementById('p2Answer').value = '';
+  document.getElementById('revealSection').classList.remove('show');
+  document.getElementById('answerInputs').style.display = 'flex';
+  document.getElementById('submitBtn').style.display = 'inline-block';
+  document.getElementById('revealBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+// Submit Answers
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const p1Answer = document.getElementById('p1Answer').value.trim();
+  const p2Answer = document.getElementById('p2Answer').value.trim();
+
+  if (!p1Answer || !p2Answer) {
+    alert('Both players must answer!');
+    return;
+  }
+
+  document.getElementById('answerInputs').style.display = 'none';
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('revealBtn').style.display = 'inline-block';
+});
+
+// Reveal Results
+document.getElementById('revealBtn').addEventListener('click', () => {
+  const p1Answer = document.getElementById('p1Answer').value.trim();
+  const p2Answer = document.getElementById('p2Answer').value.trim();
+
+  // Check if answers match (case-insensitive, loose matching)
+  const match = p1Answer.toLowerCase().includes(p2Answer.toLowerCase()) ||
+                p2Answer.toLowerCase().includes(p1Answer.toLowerCase()) ||
+                p1Answer.toLowerCase() === p2Answer.toLowerCase();
+
+  if (match) {
+    matchCount++;
+  } else {
+    missCount++;
+  }
+
+  updateStats();
+
+  // Display results
+  const comparison = document.getElementById('answerComparison');
+  comparison.innerHTML = `
+    <div class="answer-box ${match ? 'match' : 'no-match'}">
+      <div class="answer-box-name">${player1Name}</div>
+      <div class="answer-box-text">${p1Answer}</div>
+    </div>
+    <div class="answer-box ${match ? 'match' : 'no-match'}">
+      <div class="answer-box-name">${player2Name}</div>
+      <div class="answer-box-text">${p2Answer}</div>
+    </div>
+  `;
+
+  const status = document.getElementById('matchStatus');
+  if (match) {
+    status.className = 'match-status match';
+    status.textContent = '✓ MATCH! You know each other well! 💚';
+  } else {
+    status.className = 'match-status no-match';
+    status.textContent = '✗ Different answers! Time to learn more about each other! 💔';
+  }
+
+  document.getElementById('revealSection').classList.add('show');
+  document.getElementById('revealBtn').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'inline-block';
+});
+
+// Next Question
+document.getElementById('nextBtn').addEventListener('click', () => {
+  questionCount++;
+  updateStats();
+  loadQuestion();
+});
+
+// Update Stats
+function updateStats() {
+  document.getElementById('questionCount').textContent = questionCount;
+  document.getElementById('matchCount').textContent = matchCount;
+  document.getElementById('missCount').textContent = missCount;
+}
+
+// New Game
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? All progress will be lost.')) {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>

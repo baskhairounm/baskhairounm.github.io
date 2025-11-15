@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strip Poker Reimagined ♠️</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    background: linear-gradient(45deg, #e94560, #533483, #e94560);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#e94560;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(233, 69, 96, 0.1);
+    border-radius:20px;
+    border:2px solid rgba(233, 69, 96, 0.3);
+  }
+
+  #setupScreen h2 {
+    margin-bottom:30px;
+    color:#e94560;
+    font-size: clamp(24px, 5vw, 32px);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#e94560;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(233, 69, 96, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#e94560;
+    box-shadow:0 0 15px rgba(233, 69, 96, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:1100px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    display:flex;
+    justify-content:space-between;
+    padding:20px;
+    background:rgba(233, 69, 96, 0.15);
+    border-radius:15px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+
+  .stat-box {
+    font-size:clamp(14px, 3vw, 18px);
+  }
+
+  .stat-box span {
+    color:#e94560;
+    font-weight:700;
+  }
+
+  .players-section {
+    display:flex;
+    justify-content:space-around;
+    gap:30px;
+    margin:30px 0;
+    flex-wrap:wrap;
+  }
+
+  .player-box {
+    flex:1;
+    min-width:280px;
+    padding:30px;
+    background:rgba(83, 52, 131, 0.2);
+    border-radius:20px;
+    border:3px solid rgba(83, 52, 131, 0.4);
+  }
+
+  .player-name {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#e94560;
+    margin-bottom:20px;
+    font-weight:700;
+  }
+
+  .clothing-items {
+    text-align:left;
+    margin-top:15px;
+  }
+
+  .clothing-item {
+    padding:12px;
+    margin:8px 0;
+    background:rgba(0,0,0,0.3);
+    border-radius:8px;
+    border:2px solid rgba(83, 52, 131, 0.5);
+    font-size:clamp(14px, 3vw, 16px);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .clothing-item.removed {
+    opacity:0.4;
+    text-decoration:line-through;
+    border-color:rgba(233, 69, 96, 0.3);
+  }
+
+  .card-area {
+    margin:40px auto;
+    padding:40px;
+    background:rgba(233, 69, 96, 0.1);
+    border-radius:20px;
+    border:3px solid rgba(233, 69, 96, 0.3);
+    max-width:700px;
+  }
+
+  .card-display {
+    font-size:clamp(80px, 15vw, 140px);
+    margin:20px 0;
+  }
+
+  .card-suit {
+    font-size:clamp(24px, 5vw, 36px);
+    color:#e94560;
+    margin-bottom:15px;
+    font-weight:700;
+  }
+
+  .challenge-text {
+    font-size:clamp(18px, 4vw, 26px);
+    color:#fff;
+    line-height:1.6;
+    margin:20px 0;
+    padding:20px;
+    background:rgba(0,0,0,0.3);
+    border-radius:12px;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(233, 69, 96, 0.5);
+    border-radius:12px;
+    background:#e94560;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(233, 69, 96, 0.6);
+  }
+
+  #drawBtn {
+    background:linear-gradient(135deg, #533483, #e94560);
+    font-size:clamp(16px, 3.5vw, 22px);
+    padding:20px 50px;
+  }
+
+  #completeBtn, #drinkBtn {display:none;}
+
+  @media (max-width: 768px) {
+    .players-section {
+      flex-direction:column;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="content">
+<h1>♠️ Strip Poker Reimagined ♠️</h1>
+<p class="subtitle">"Each suit brings a new challenge"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2>Game Setup</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player...">
+  </div>
+
+  <button id="startBtn">Start Game ♠️</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="stat-box">Round: <span id="roundCount">1</span></div>
+    <div class="stat-box">Current Player: <span id="currentPlayerName" style="color:#e94560;">Player 1</span></div>
+    <div class="stat-box">Cards Left: <span id="cardsLeft">52</span></div>
+  </div>
+
+  <div class="players-section">
+    <div class="player-box">
+      <div class="player-name" id="p1Name">Player 1</div>
+      <div>Items Remaining: <span style="color:#e94560; font-weight:700;" id="p1Items">5</span></div>
+      <div class="clothing-items" id="p1Clothing"></div>
+    </div>
+
+    <div class="player-box">
+      <div class="player-name" id="p2Name">Player 2</div>
+      <div>Items Remaining: <span style="color:#e94560; font-weight:700;" id="p2Items">5</span></div>
+      <div class="clothing-items" id="p2Clothing"></div>
+    </div>
+  </div>
+
+  <div class="card-area">
+    <div class="card-suit" id="cardSuit">Draw a card to begin</div>
+    <div class="card-display" id="cardDisplay">🃏</div>
+    <div class="challenge-text" id="challengeText">Click "Draw Card" to start!</div>
+  </div>
+
+  <div>
+    <button id="drawBtn">🎴 Draw Card</button>
+    <button id="completeBtn">✅ Complete Challenge</button>
+    <button id="drinkBtn">🍺 Remove Item Instead</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Card suits and their challenge types
+const suits = {
+  '♥️': {name: 'HEARTS - Romantic', color: '#e94560'},
+  '♠️': {name: 'SPADES - Daring', color: '#533483'},
+  '♦️': {name: 'DIAMONDS - Questions', color: '#e94560'},
+  '♣️': {name: 'CLUBS - Physical', color: '#533483'}
+};
+
+// Challenges by suit
+const challenges = {
+  '♥️': [
+    "Give your partner a passionate 30-second kiss",
+    "Whisper three things you find attractive about your partner",
+    "Give your partner a sensual shoulder massage for 2 minutes",
+    "Tell your partner your favorite memory together",
+    "Trace your partner's lips with your finger",
+    "Look into your partner's eyes for 1 minute without talking",
+    "Kiss your partner's neck for 20 seconds",
+    "Tell your partner a romantic fantasy",
+    "Slow dance with your partner for 1 song",
+    "Feed your partner something with your fingers",
+  ],
+  '♠️': [
+    "Remove one item of clothing of your choice",
+    "Let your partner remove one item of your clothing",
+    "Do a 30-second striptease",
+    "Sit on your partner's lap for the next 3 rounds",
+    "Give your partner a lap dance",
+    "Let your partner take a body shot off you",
+    "Trade one piece of clothing with your partner",
+    "Kiss your partner anywhere they choose",
+    "Remove an item while maintaining eye contact",
+    "Model your current outfit seductively",
+  ],
+  '♦️': [
+    "What's your favorite thing about my body?",
+    "Describe your perfect date night with me",
+    "What's one fantasy you've never told me?",
+    "Rate our sexual chemistry from 1-10 and explain",
+    "What's the first thing that attracted you to me?",
+    "Tell me something you want me to do more often",
+    "What's your favorite position and why?",
+    "Describe the last time you thought about me sexually",
+    "What's something new you want to try together?",
+    "Tell me your deepest desire right now",
+  ],
+  '♣️': [
+    "Do 10 push-ups or remove an item",
+    "Hold a plank position for 30 seconds",
+    "Do your best sexy walk across the room",
+    "Strike your most seductive pose and hold it",
+    "Give your partner a playful spanking (5 times)",
+    "Demonstrate your best kiss on your hand",
+    "Do 5 squats while making eye contact",
+    "Flex and show off your body",
+    "Dance provocatively for 30 seconds",
+    "Bite your lip and wink at your partner 3 times",
+  ]
+};
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let currentPlayerIndex = 0;
+let roundCount = 1;
+let deck = [];
+let player1Clothes = 5;
+let player2Clothes = 5;
+let currentCard = null;
+
+// Clothing items
+const clothingItems = ["Shirt", "Pants/Skirt", "Socks", "Shoes", "Accessory"];
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  document.getElementById('p1Name').textContent = player1Name;
+  document.getElementById('p2Name').textContent = player2Name;
+  document.getElementById('currentPlayerName').textContent = player1Name;
+
+  initializeClothing();
+  initializeDeck();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+});
+
+// Initialize Clothing
+function initializeClothing() {
+  const p1Clothing = document.getElementById('p1Clothing');
+  const p2Clothing = document.getElementById('p2Clothing');
+
+  p1Clothing.innerHTML = clothingItems.map((item, i) =>
+    `<div class="clothing-item" data-player="1" data-index="${i}">
+      <span>${item}</span>
+      <span>👕</span>
+    </div>`
+  ).join('');
+
+  p2Clothing.innerHTML = clothingItems.map((item, i) =>
+    `<div class="clothing-item" data-player="2" data-index="${i}">
+      <span>${item}</span>
+      <span>👕</span>
+    </div>`
+  ).join('');
+}
+
+// Initialize Deck
+function initializeDeck() {
+  const suitSymbols = Object.keys(suits);
+  const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+  deck = [];
+  for (let suit of suitSymbols) {
+    for (let rank of ranks) {
+      deck.push({suit, rank});
+    }
+  }
+
+  // Shuffle deck
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+
+  updateStats();
+}
+
+// Draw Card
+document.getElementById('drawBtn').addEventListener('click', () => {
+  if (deck.length === 0) {
+    alert('Deck is empty! Reshuffling...');
+    initializeDeck();
+  }
+
+  currentCard = deck.pop();
+  displayCard();
+
+  document.getElementById('drawBtn').style.display = 'none';
+  document.getElementById('completeBtn').style.display = 'inline-block';
+  document.getElementById('drinkBtn').style.display = 'inline-block';
+
+  updateStats();
+});
+
+// Display Card
+function displayCard() {
+  const {suit, rank} = currentCard;
+  const suitInfo = suits[suit];
+
+  document.getElementById('cardSuit').textContent = suitInfo.name;
+  document.getElementById('cardDisplay').textContent = `${rank}${suit}`;
+
+  const challengeList = challenges[suit];
+  const challenge = challengeList[Math.floor(Math.random() * challengeList.length)];
+
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  document.getElementById('challengeText').textContent = `${playerName}: ${challenge}`;
+}
+
+// Complete Challenge
+document.getElementById('completeBtn').addEventListener('click', () => {
+  nextTurn();
+});
+
+// Remove Item Instead
+document.getElementById('drinkBtn').addEventListener('click', () => {
+  removeClothingItem();
+  nextTurn();
+});
+
+// Remove Clothing Item
+function removeClothingItem() {
+  const player = currentPlayerIndex + 1;
+  const clothingElements = document.querySelectorAll(`.clothing-item[data-player="${player}"]:not(.removed)`);
+
+  if (clothingElements.length > 0) {
+    clothingElements[0].classList.add('removed');
+
+    if (player === 1) {
+      player1Clothes--;
+      if (player1Clothes === 0) {
+        alert(`🎉 ${player2Name} WINS! ${player1Name} has no items left!`);
+      }
+    } else {
+      player2Clothes--;
+      if (player2Clothes === 0) {
+        alert(`🎉 ${player1Name} WINS! ${player2Name} has no items left!`);
+      }
+    }
+
+    updateStats();
+  }
+});
+
+// Next Turn
+function nextTurn() {
+  currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+  roundCount++;
+
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  document.getElementById('currentPlayerName').textContent = playerName;
+
+  document.getElementById('drawBtn').style.display = 'inline-block';
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('drinkBtn').style.display = 'none';
+
+  document.getElementById('cardDisplay').textContent = '🃏';
+  document.getElementById('cardSuit').textContent = 'Draw a card';
+  document.getElementById('challengeText').textContent = 'Click "Draw Card" for your challenge!';
+
+  updateStats();
+}
+
+// Update Stats
+function updateStats() {
+  document.getElementById('roundCount').textContent = roundCount;
+  document.getElementById('cardsLeft').textContent = deck.length;
+  document.getElementById('p1Items').textContent = player1Clothes;
+  document.getElementById('p2Items').textContent = player2Clothes;
+}
+
+// New Game
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? All progress will be lost.')) {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>

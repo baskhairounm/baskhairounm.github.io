@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couples Games Collection 🔥</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0a0015 0%, #1a0033 50%, #2d0a0a 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* Animated Background Stars */
+  .stars {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .star {
+    position:absolute;
+    width:2px;
+    height:2px;
+    background:white;
+    border-radius:50%;
+    animation:twinkle 3s infinite;
+  }
+
+  @keyframes twinkle {
+    0%, 100% {opacity:0;}
+    50% {opacity:1;}
+  }
+
+  .content {
+    position:relative;
+    z-index:1;
+    max-width:1200px;
+    margin:0 auto;
+  }
+
+  h1 {
+    font-size: clamp(40px, 8vw, 72px);
+    margin-bottom:15px;
+    background: linear-gradient(45deg, #ff00ff, #00ffff, #ff6b35, #ff00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% auto;
+    animation: gradientShift 3s ease infinite;
+    filter: drop-shadow(0 0 20px rgba(255,0,255,0.5));
+  }
+
+  @keyframes gradientShift {
+    0%, 100% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+  }
+
+  .subtitle {
+    font-size: clamp(18px, 4vw, 28px);
+    color:#ff69b4;
+    margin-bottom:50px;
+    opacity:0.9;
+    font-style:italic;
+  }
+
+  .games-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+    gap:30px;
+    padding:20px;
+    margin-bottom:50px;
+  }
+
+  .game-card {
+    background:linear-gradient(135deg,
+      rgba(255,0,255,0.15) 0%,
+      rgba(0,255,255,0.15) 50%,
+      rgba(255,107,53,0.15) 100%);
+    border-radius:25px;
+    border:3px solid rgba(255,0,255,0.4);
+    padding:40px 30px;
+    transition:all 0.4s ease;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    backdrop-filter:blur(15px);
+    box-shadow:0 15px 50px rgba(0,0,0,0.5),
+               inset 0 0 30px rgba(255,0,255,0.1);
+    text-decoration:none;
+    display:block;
+  }
+
+  .game-card::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,0.2),
+      transparent);
+    transition:left 0.5s;
+  }
+
+  .game-card:hover::before {
+    left:100%;
+  }
+
+  .game-card:hover {
+    transform:translateY(-10px) scale(1.02);
+    border-color:#00ffff;
+    box-shadow:0 25px 70px rgba(255,0,255,0.6),
+               0 0 40px rgba(0,255,255,0.4),
+               inset 0 0 50px rgba(255,0,255,0.2);
+  }
+
+  .game-icon {
+    font-size:clamp(48px, 10vw, 72px);
+    margin-bottom:20px;
+    display:block;
+    animation:float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {transform:translateY(0px);}
+    50% {transform:translateY(-10px);}
+  }
+
+  .game-card:nth-child(1) .game-icon {animation-delay:0s;}
+  .game-card:nth-child(2) .game-icon {animation-delay:0.5s;}
+  .game-card:nth-child(3) .game-icon {animation-delay:1s;}
+
+  .game-title {
+    font-size:clamp(24px, 5vw, 32px);
+    color:#fff;
+    margin-bottom:15px;
+    font-weight:700;
+    text-shadow:0 0 15px rgba(255,0,255,0.6);
+  }
+
+  .game-description {
+    font-size:clamp(14px, 3vw, 18px);
+    color:#ddd;
+    line-height:1.6;
+    margin-bottom:20px;
+  }
+
+  .game-tag {
+    display:inline-block;
+    padding:8px 16px;
+    background:rgba(255,0,255,0.3);
+    border-radius:20px;
+    font-size:clamp(12px, 2.5vw, 14px);
+    margin:5px;
+    border:1px solid rgba(255,0,255,0.5);
+    color:#00ffff;
+    font-weight:600;
+  }
+
+  /* Particles */
+  .particle {
+    position:fixed;
+    pointer-events:none;
+    animation:floatUp 3s ease-out forwards;
+    z-index:1000;
+  }
+
+  @keyframes floatUp {
+    0% {opacity:1; transform:translateY(0) scale(1) rotate(0deg);}
+    100% {opacity:0; transform:translateY(-300px) scale(0) rotate(360deg);}
+  }
+
+  /* Footer */
+  footer {
+    margin-top:60px;
+    padding:30px;
+    color:#999;
+    font-size:clamp(12px, 2.5vw, 16px);
+  }
+
+  footer a {
+    color:#ff00ff;
+    text-decoration:none;
+    transition:color 0.3s;
+  }
+
+  footer a:hover {
+    color:#00ffff;
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 768px) {
+    .games-grid {
+      grid-template-columns:1fr;
+      gap:20px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="content">
+  <h1>🔥 Couples Games Collection 🔥</h1>
+  <p class="subtitle">Choose Your Adventure...</p>
+
+  <div class="games-grid">
+    <!-- Game 1: Slow Burn -->
+    <a href="sb.html" class="game-card" data-game="slow-burn">
+      <span class="game-icon">🔥</span>
+      <h2 class="game-title">Slow Burn</h2>
+      <p class="game-description">
+        A digital couples game designed to build anticipation and intimacy through progressive challenges and thoughtful questions.
+      </p>
+      <div>
+        <span class="game-tag">Romantic</span>
+        <span class="game-tag">Progressive</span>
+        <span class="game-tag">2 Players</span>
+      </div>
+    </a>
+
+    <!-- Game 2: Dice of Desire -->
+    <a href="dd.html" class="game-card" data-game="dice-desire">
+      <span class="game-icon">🎲</span>
+      <h2 class="game-title">Dice of Desire</h2>
+      <p class="game-description">
+        Roll the dice and let fate decide your intimate challenges. A chance-based game that combines luck with passion.
+      </p>
+      <div>
+        <span class="game-tag">Chance</span>
+        <span class="game-tag">Exciting</span>
+        <span class="game-tag">2 Players</span>
+      </div>
+    </a>
+
+    <!-- Game 3: Truth or Dare: After Dark -->
+    <a href="truth-or-dare-after-dark.html" class="game-card" data-game="truth-dare">
+      <span class="game-icon">🌙</span>
+      <h2 class="game-title">Truth or Dare: After Dark</h2>
+      <p class="game-description">
+        Spin the wheel and face spicy truths or daring challenges. Perfect for adventurous couples ready to explore!
+      </p>
+      <div>
+        <span class="game-tag">Wheel Spin</span>
+        <span class="game-tag">Daring</span>
+        <span class="game-tag">Party Game</span>
+      </div>
+    </a>
+
+    <!-- Game 4: Would You Rather: After Hours -->
+    <a href="would-you-rather.html" class="game-card" data-game="would-you-rather">
+      <span class="game-icon">🤔</span>
+      <h2 class="game-title">Would You Rather</h2>
+      <p class="game-description">
+        Choose between two tantalizing options and discover each other's deepest desires through thought-provoking scenarios.
+      </p>
+      <div>
+        <span class="game-tag">Discussion</span>
+        <span class="game-tag">Fantasy</span>
+        <span class="game-tag">3 Levels</span>
+      </div>
+    </a>
+
+    <!-- Game 5: Naughty Never Have I Ever -->
+    <a href="never-have-i-ever.html" class="game-card" data-game="never-have">
+      <span class="game-icon">🍷</span>
+      <h2 class="game-title">Never Have I Ever</h2>
+      <p class="game-description">
+        Confess your past experiences or take a drink. A revealing game that brings couples closer through honesty.
+      </p>
+      <div>
+        <span class="game-tag">Drinking</span>
+        <span class="game-tag">Confessions</span>
+        <span class="game-tag">Party Fun</span>
+      </div>
+    </a>
+
+    <!-- Game 6: Strip Poker Reimagined -->
+    <a href="strip-poker.html" class="game-card" data-game="strip-poker">
+      <span class="game-icon">♠️</span>
+      <h2 class="game-title">Strip Poker Reimagined</h2>
+      <p class="game-description">
+        Draw cards for romantic, daring, question, or physical challenges. Complete them or lose an item of clothing!
+      </p>
+      <div>
+        <span class="game-tag">Card Game</span>
+        <span class="game-tag">Challenges</span>
+        <span class="game-tag">Strip Game</span>
+      </div>
+    </a>
+
+    <!-- Game 7: Bedroom Bingo -->
+    <a href="bedroom-bingo.html" class="game-card" data-game="bedroom-bingo">
+      <span class="game-icon">🎯</span>
+      <h2 class="game-title">Bedroom Bingo</h2>
+      <p class="game-description">
+        Complete intimate activities to mark off squares on your bingo card. First to get five in a row wins a special prize!
+      </p>
+      <div>
+        <span class="game-tag">Bingo</span>
+        <span class="game-tag">Activities</span>
+        <span class="game-tag">Goal-Based</span>
+      </div>
+    </a>
+
+    <!-- Game 8: Couples Trivia -->
+    <a href="couples-trivia.html" class="game-card" data-game="couples-trivia">
+      <span class="game-icon">💑</span>
+      <h2 class="game-title">Couples Trivia</h2>
+      <p class="game-description">
+        Test how well you know each other with intimate questions. Answer the same way to score points and grow closer!
+      </p>
+      <div>
+        <span class="game-tag">Knowledge</span>
+        <span class="game-tag">Connection</span>
+        <span class="game-tag">Learning</span>
+      </div>
+    </a>
+
+    <!-- Game 9: 52 Shades -->
+    <a href="52-shades.html" class="game-card" data-game="52-shades">
+      <span class="game-icon">🃏</span>
+      <h2 class="game-title">52 Shades</h2>
+      <p class="game-description">
+        Draw from a deck of 52 escalating challenges. From warm-up to intense, each card brings a new level of passion!
+      </p>
+      <div>
+        <span class="game-tag">Cards</span>
+        <span class="game-tag">Progressive</span>
+        <span class="game-tag">Escalating</span>
+      </div>
+    </a>
+
+    <!-- Game 10: The Passion Wheel -->
+    <a href="passion-wheel.html" class="game-card" data-game="passion-wheel">
+      <span class="game-icon">🎡</span>
+      <h2 class="game-title">The Passion Wheel</h2>
+      <p class="game-description">
+        Spin three wheels to combine action, location, and style into unique challenges tailored just for you!
+      </p>
+      <div>
+        <span class="game-tag">Spinning</span>
+        <span class="game-tag">Random</span>
+        <span class="game-tag">Creative</span>
+      </div>
+    </a>
+
+    <!-- Game 11: Spin the Bottle 2.0 -->
+    <a href="spin-bottle.html" class="game-card" data-game="spin-bottle">
+      <span class="game-icon">🍾</span>
+      <h2 class="game-title">Spin the Bottle 2.0</h2>
+      <p class="game-description">
+        A modern twist on the classic game. Spin the bottle to determine who faces the next spicy challenge!
+      </p>
+      <div>
+        <span class="game-tag">Classic</span>
+        <span class="game-tag">Spinning</span>
+        <span class="game-tag">Challenges</span>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <p>✨ Made with passion for adventurous couples ✨</p>
+    <p style="margin-top:10px; font-size:clamp(11px, 2vw, 14px); opacity:0.7;">
+      Please play responsibly. All games are intended for consenting adults in committed relationships.
+    </p>
+  </footer>
+</div>
+
+<script>
+// Generate stars
+function createStars() {
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    starsContainer.appendChild(star);
+  }
+}
+createStars();
+
+// Particles on hover
+function createParticles(emoji, count = 10) {
+  for (let i = 0; i < count; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * window.innerWidth + 'px';
+    particle.style.top = window.innerHeight / 2 + 'px';
+    particle.style.fontSize = (Math.random() * 20 + 15) + 'px';
+    particle.textContent = emoji;
+    document.body.appendChild(particle);
+    setTimeout(() => particle.remove(), 3000);
+  }
+}
+
+// Particle effects map
+const gameParticles = {
+  'slow-burn': '🔥',
+  'dice-desire': '🎲',
+  'truth-dare': '🌙',
+  'would-you-rather': '🤔',
+  'never-have': '🍷',
+  'strip-poker': '♠️',
+  'bedroom-bingo': '🎯',
+  'couples-trivia': '💑',
+  '52-shades': '🃏',
+  'passion-wheel': '🎡',
+  'spin-bottle': '🍾'
+};
+
+// Add hover effects
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('mouseenter', function() {
+    const game = this.getAttribute('data-game');
+    const particle = gameParticles[game];
+    if (particle) createParticles(particle, 8);
+  });
+});
+
+// Add click effect
+document.querySelectorAll('.game-card').forEach(card => {
+  card.addEventListener('click', function(e) {
+    const game = this.getAttribute('data-game');
+    const particle = gameParticles[game];
+    if (particle) createParticles(particle, 20);
+  });
+});
+</script>
+</body>
+</html>

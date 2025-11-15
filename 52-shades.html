@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>52 Shades Card Game 🃏</title>
+<style>
+  * {margin:0; padding:0; box-sizing:border-box;}
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #141e30 0%, #243b55 50%, #141e30 100%);
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    min-height:100vh;
+  }
+
+  h1 {
+    font-size: clamp(36px, 8vw, 64px);
+    margin-bottom:10px;
+    background: linear-gradient(45deg, #6a11cb, #2575fc, #6a11cb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 3.5vw, 22px);
+    color:#2575fc;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+
+  /* Setup Screen */
+  #setupScreen {
+    max-width:600px;
+    margin:50px auto;
+    padding:40px;
+    background:rgba(37, 117, 252, 0.1);
+    border-radius:20px;
+    border:2px solid rgba(37, 117, 252, 0.3);
+  }
+
+  .input-group {
+    margin:20px 0;
+    text-align:left;
+  }
+
+  .input-group label {
+    display:block;
+    margin-bottom:8px;
+    color:#2575fc;
+    font-size:clamp(14px, 3vw, 18px);
+    font-weight:600;
+  }
+
+  .input-group input {
+    width:100%;
+    padding:14px 18px;
+    border:2px solid rgba(37, 117, 252, 0.4);
+    border-radius:10px;
+    background:rgba(0,0,0,0.5);
+    color:#fff;
+    font-size:clamp(14px, 3vw, 16px);
+  }
+
+  .input-group input:focus {
+    outline:none;
+    border-color:#2575fc;
+    box-shadow:0 0 15px rgba(37, 117, 252, 0.5);
+  }
+
+  /* Game Screen */
+  #gameScreen {
+    display:none;
+    max-width:900px;
+    margin:0 auto;
+  }
+
+  .game-header {
+    display:flex;
+    justify-content:space-between;
+    padding:20px;
+    background:rgba(37, 117, 252, 0.15);
+    border-radius:15px;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    gap:15px;
+  }
+
+  .stat-box {
+    font-size:clamp(14px, 3vw, 18px);
+  }
+
+  .stat-box span {
+    color:#2575fc;
+    font-weight:700;
+  }
+
+  .deck-display {
+    margin:40px auto;
+    max-width:600px;
+  }
+
+  .deck-visual {
+    position:relative;
+    height:250px;
+    margin:30px 0;
+  }
+
+  .deck-stack {
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width:180px;
+    height:250px;
+    background:rgba(37, 117, 252, 0.2);
+    border:4px solid rgba(37, 117, 252, 0.5);
+    border-radius:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:clamp(80px, 15vw, 120px);
+    cursor:pointer;
+    transition:all 0.3s;
+  }
+
+  .deck-stack:hover {
+    transform:translateX(-50%) scale(1.05);
+    box-shadow:0 0 30px rgba(37, 117, 252, 0.6);
+  }
+
+  .card-display {
+    margin:40px auto;
+    padding:50px 40px;
+    background:rgba(106, 17, 203, 0.2);
+    border-radius:20px;
+    border:3px solid rgba(106, 17, 203, 0.4);
+    min-height:300px;
+    display:none;
+  }
+
+  .card-display.show {
+    display:block;
+    animation:slideIn 0.5s;
+  }
+
+  @keyframes slideIn {
+    from {opacity:0; transform:translateY(-30px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  .card-number {
+    font-size:clamp(48px, 10vw, 80px);
+    color:#2575fc;
+    margin-bottom:20px;
+    font-weight:900;
+  }
+
+  .card-type {
+    font-size:clamp(20px, 4vw, 28px);
+    color:#6a11cb;
+    margin-bottom:20px;
+    font-weight:700;
+    text-transform:uppercase;
+  }
+
+  .challenge-text {
+    font-size:clamp(20px, 4.5vw, 28px);
+    line-height:1.6;
+    color:#fff;
+    margin:20px 0;
+  }
+
+  .intensity-meter {
+    margin:30px 0;
+  }
+
+  .intensity-label {
+    font-size:clamp(16px, 3.5vw, 20px);
+    color:#2575fc;
+    margin-bottom:10px;
+  }
+
+  .intensity-bar {
+    width:100%;
+    height:20px;
+    background:rgba(0,0,0,0.4);
+    border-radius:10px;
+    overflow:hidden;
+  }
+
+  .intensity-fill {
+    height:100%;
+    background:linear-gradient(90deg, #6a11cb, #2575fc);
+    border-radius:10px;
+    transition:width 0.5s;
+  }
+
+  button {
+    padding:16px 40px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:10px;
+    border:2px solid rgba(37, 117, 252, 0.5);
+    border-radius:12px;
+    background:#2575fc;
+    color:#fff;
+    cursor:pointer;
+    font-weight:700;
+    transition:all 0.3s;
+  }
+
+  button:disabled {
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+
+  button:not(:disabled):hover {
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(37, 117, 252, 0.6);
+  }
+
+  #drawBtn {
+    background:linear-gradient(135deg, #6a11cb, #2575fc);
+    font-size:clamp(16px, 3.5vw, 22px);
+    padding:20px 50px;
+  }
+
+  #completeBtn, #skipBtn {display:none;}
+
+  @media (max-width: 768px) {
+    .game-header {
+      flex-direction:column;
+      text-align:center;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="content">
+<h1>🃏 52 Shades 🃏</h1>
+<p class="subtitle">"Draw cards with escalating challenges"</p>
+
+<!-- Setup Screen -->
+<div id="setupScreen">
+  <h2 style="color:#2575fc; margin-bottom:30px;">Player Names</h2>
+
+  <div class="input-group">
+    <label for="player1Name">Player 1 Name</label>
+    <input type="text" id="player1Name" placeholder="Enter first player...">
+  </div>
+
+  <div class="input-group">
+    <label for="player2Name">Player 2 Name</label>
+    <input type="text" id="player2Name" placeholder="Enter second player...">
+  </div>
+
+  <button id="startBtn">Start Game 🃏</button>
+</div>
+
+<!-- Game Screen -->
+<div id="gameScreen">
+  <div class="game-header">
+    <div class="stat-box">Cards Drawn: <span id="cardsDrawn">0</span> / 52</div>
+    <div class="stat-box">Current Player: <span id="currentPlayerName">Player 1</span></div>
+    <div class="stat-box">Completed: <span id="completedCount">0</span></div>
+  </div>
+
+  <div class="intensity-meter">
+    <div class="intensity-label">Intensity Level: <span id="intensityValue">0</span>%</div>
+    <div class="intensity-bar">
+      <div class="intensity-fill" id="intensityFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="deck-display">
+    <div class="deck-visual">
+      <div class="deck-stack" id="deckStack">
+        🃏
+      </div>
+    </div>
+    <button id="drawBtn">Draw Card 🎴</button>
+  </div>
+
+  <div class="card-display" id="cardDisplay">
+    <div class="card-number" id="cardNumber">A</div>
+    <div class="card-type" id="cardType">Wild Card</div>
+    <div class="challenge-text" id="challengeText">Challenge appears here...</div>
+  </div>
+
+  <div style="margin-top:30px;">
+    <button id="completeBtn">✅ Complete</button>
+    <button id="skipBtn">🍺 Drink Instead</button>
+    <button id="newGameBtn">🔄 New Game</button>
+  </div>
+</div>
+</div>
+
+<script>
+// Challenge database by card number
+const challenges = {
+  // Numbers 2-5: Mild
+  '2': ["Give your partner a gentle kiss", "Compliment your partner", "Hold hands for the next 2 rounds", "Share something you love about your partner"],
+  '3': ["Massage your partner's shoulders", "Whisper something sweet", "Look into each other's eyes for 30 seconds", "Share your favorite memory together"],
+  '4': ["Give your partner a 1-minute back rub", "Kiss your partner's neck", "Tell your partner a secret", "Describe what first attracted you to them"],
+  '5': ["Slow dance together", "Give your partner 5 kisses", "Share a romantic fantasy", "Feed your partner something"],
+
+  // Numbers 6-9: Moderate
+  '6': ["Make out for 2 minutes", "Remove one item of clothing", "Give your partner a sensual massage", "Sit on your partner's lap"],
+  '7': ["Give your partner a lap dance", "Let your partner kiss you anywhere", "Trade one piece of clothing", "Describe your favorite position"],
+  '8': ["Give oral pleasure (or remove 2 items)", "Strip down to underwear", "Demonstrate your best kiss", "Share your deepest desire"],
+  '9': ["30-second striptease", "Body shots", "Let partner undress you", "Tell your dirtiest fantasy"],
+
+  // Numbers 10-King: Intense
+  '10': ["Have a quickie right now", "Use a toy together", "Try a new position", "Mutual masturbation"],
+  'J': ["Partner's choice - they control the next 10 minutes", "Roleplay scenario", "Try bondage/restraints", "Worship partner's body"],
+  'Q': ["Extended foreplay session", "Multiple rounds", "Try something you've never done", "Fulfill a fantasy"],
+  'K': ["Ultimate challenge - partner's wildest request", "Marathon session", "Complete surrender", "No limits for next hour"],
+
+  // Aces: Wild Cards
+  'A': ["Choose any challenge from the deck", "Create your own challenge", "Spin again and do both", "Trade places - other player draws next"]
+};
+
+// Card types for display
+const cardTypes = {
+  '2': 'Warm-Up', '3': 'Warm-Up', '4': 'Warm-Up', '5': 'Warm-Up',
+  '6': 'Heating Up', '7': 'Heating Up', '8': 'Heating Up', '9': 'Heating Up',
+  '10': 'Intense', 'J': 'Intense', 'Q': 'Intense', 'K': 'Intense',
+  'A': 'Wild Card'
+};
+
+// Game State
+let player1Name = 'Player 1';
+let player2Name = 'Player 2';
+let currentPlayerIndex = 0;
+let deck = [];
+let cardsDrawn = 0;
+let completedCount = 0;
+let intensity = 0;
+
+// Start Game
+document.getElementById('startBtn').addEventListener('click', () => {
+  const p1 = document.getElementById('player1Name').value.trim();
+  const p2 = document.getElementById('player2Name').value.trim();
+
+  player1Name = p1 || 'Player 1';
+  player2Name = p2 || 'Player 2';
+
+  updateCurrentPlayer();
+  initializeDeck();
+
+  document.getElementById('setupScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+});
+
+// Initialize Deck
+function initializeDeck() {
+  const cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  deck = [];
+
+  // Create 4 of each card (4 suits)
+  for (let i = 0; i < 4; i++) {
+    deck.push(...cards);
+  }
+
+  // Shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+}
+
+// Update Current Player
+function updateCurrentPlayer() {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  document.getElementById('currentPlayerName').textContent = playerName;
+}
+
+// Draw Card
+document.getElementById('drawBtn').addEventListener('click', drawCard);
+document.getElementById('deckStack').addEventListener('click', drawCard);
+
+function drawCard() {
+  if (deck.length === 0) {
+    alert('🎉 All cards drawn! Reshuffle for more fun!');
+    initializeDeck();
+    cardsDrawn = 0;
+  }
+
+  const card = deck.pop();
+  cardsDrawn++;
+
+  displayCard(card);
+  updateStats();
+
+  document.getElementById('drawBtn').style.display = 'none';
+  document.getElementById('deckStack').style.pointerEvents = 'none';
+  document.getElementById('completeBtn').style.display = 'inline-block';
+  document.getElementById('skipBtn').style.display = 'inline-block';
+}
+
+// Display Card
+function displayCard(card) {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  const challengeList = challenges[card];
+  const challenge = challengeList[Math.floor(Math.random() * challengeList.length)];
+
+  document.getElementById('cardNumber').textContent = card;
+  document.getElementById('cardType').textContent = cardTypes[card];
+  document.getElementById('challengeText').textContent = `${playerName}: ${challenge}`;
+  document.getElementById('cardDisplay').classList.add('show');
+
+  // Update intensity based on card value
+  const intensityMap = {
+    '2': 5, '3': 10, '4': 15, '5': 20,
+    '6': 30, '7': 40, '8': 50, '9': 60,
+    '10': 70, 'J': 80, 'Q': 90, 'K': 100, 'A': 50
+  };
+  intensity = Math.min(100, intensityMap[card]);
+  updateIntensity();
+}
+
+// Complete Challenge
+document.getElementById('completeBtn').addEventListener('click', () => {
+  completedCount++;
+  nextTurn();
+});
+
+// Skip Challenge
+document.getElementById('skipBtn').addEventListener('click', () => {
+  const playerName = currentPlayerIndex === 0 ? player1Name : player2Name;
+  alert(`🍺 ${playerName} takes a drink!`);
+  nextTurn();
+});
+
+// Next Turn
+function nextTurn() {
+  currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+  updateCurrentPlayer();
+
+  document.getElementById('cardDisplay').classList.remove('show');
+  document.getElementById('drawBtn').style.display = 'inline-block';
+  document.getElementById('deckStack').style.pointerEvents = 'auto';
+  document.getElementById('completeBtn').style.display = 'none';
+  document.getElementById('skipBtn').style.display = 'none';
+
+  updateStats();
+}
+
+// Update Stats
+function updateStats() {
+  document.getElementById('cardsDrawn').textContent = cardsDrawn;
+  document.getElementById('completedCount').textContent = completedCount;
+}
+
+// Update Intensity
+function updateIntensity() {
+  document.getElementById('intensityValue').textContent = intensity;
+  document.getElementById('intensityFill').style.width = intensity + '%';
+}
+
+// New Game
+document.getElementById('newGameBtn').addEventListener('click', () => {
+  if (confirm('Start a new game? All progress will be lost.')) {
+    location.reload();
+  }
+});
+</script>
+</body>
+</html>
