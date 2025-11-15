@@ -32,18 +32,23 @@
 
   /* Player Name Setup */
   #setupScreen {
-    max-width:500px;
+    max-width:550px;
     margin:50px auto;
-    padding:40px;
-    background:rgba(255,255,255,0.05);
-    border-radius:20px;
-    border:2px solid rgba(255,107,53,0.3);
-    backdrop-filter:blur(10px);
+    padding:45px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.12) 0%,
+      rgba(255,0,110,0.12) 100%);
+    border-radius:25px;
+    border:3px solid rgba(255,107,53,0.4);
+    backdrop-filter:blur(15px);
+    box-shadow:0 20px 60px rgba(0,0,0,0.6),
+               inset 0 2px 10px rgba(255,255,255,0.05);
   }
 
   #setupScreen h2 {
-    margin-bottom:30px;
+    margin-bottom:35px;
     color:#ff6b35;
+    text-shadow:0 2px 10px rgba(255,107,53,0.5);
   }
 
   .input-group {
@@ -61,31 +66,41 @@
 
   .input-group input {
     width:100%;
-    padding:12px 15px;
-    border:2px solid rgba(255,107,53,0.4);
-    border-radius:10px;
-    background:rgba(0,0,0,0.5);
+    padding:14px 18px;
+    border:2px solid rgba(255,107,53,0.5);
+    border-radius:12px;
+    background:rgba(0,0,0,0.6);
     color:#fff;
     font-size:16px;
     transition:0.3s;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,0.3);
   }
 
   .input-group input:focus {
     outline:none;
     border-color:#ff6b35;
-    box-shadow:0 0 15px rgba(255,107,53,0.5);
+    box-shadow:0 0 20px rgba(255,107,53,0.6),
+               inset 0 2px 5px rgba(0,0,0,0.3);
+    background:rgba(0,0,0,0.7);
   }
 
   /* Board */
   #gameScreen {display:none;}
 
   #positions {
-    font-size:clamp(12px, 3vw, 18px);
-    margin:10px 0 15px 0;
-    padding:10px;
-    background:rgba(255,255,255,0.05);
-    border-radius:10px;
+    font-size:clamp(14px, 3vw, 18px);
+    margin:15px 0 20px 0;
+    padding:12px 20px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.15) 0%,
+      rgba(255,0,110,0.15) 100%);
+    border-radius:12px;
     display:inline-block;
+    border:2px solid rgba(255,107,53,0.4);
+    box-shadow:0 5px 20px rgba(0,0,0,0.5),
+               inset 0 1px 3px rgba(255,255,255,0.1);
+    font-weight:600;
+    letter-spacing:0.5px;
   }
 
   #board {
@@ -95,13 +110,13 @@
     display:grid;
     grid-template-columns:repeat(10,1fr);
     grid-auto-rows:minmax(70px, auto);
-    gap:clamp(8px, 1.5vw, 15px);
+    gap:clamp(4px, 1vw, 8px);
     perspective:1000px;
-    padding:clamp(15px, 3vw, 30px);
-    background:radial-gradient(circle at center, rgba(139,0,0,0.15) 0%, rgba(0,0,0,0.4) 100%);
-    border-radius:25px;
-    border:4px solid rgba(255,107,53,0.4);
-    box-shadow:0 0 50px rgba(255,0,0,0.3), inset 0 0 50px rgba(255,107,53,0.05);
+    padding:clamp(20px, 4vw, 40px);
+    background:linear-gradient(135deg, rgba(20,0,0,0.95) 0%, rgba(40,10,10,0.95) 50%, rgba(20,0,0,0.95) 100%);
+    border-radius:30px;
+    border:6px solid rgba(255,107,53,0.6);
+    box-shadow:0 0 60px rgba(255,0,0,0.5), inset 0 0 80px rgba(139,0,0,0.3);
     position:relative;
   }
 
@@ -124,41 +139,148 @@
     width:100%;
     aspect-ratio:1;
     padding:clamp(6px, 1.5vw, 12px);
-    border-radius:15px;
+    border-radius:12px;
     font-size:clamp(8px, 1.5vw, 12px);
     cursor:pointer;
     transition:all 0.4s ease;
     position:relative;
-    box-shadow:0 6px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,107,53,0.3);
     font-weight:600;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
-    border:2px solid rgba(255,255,255,0.1);
+    border:3px solid rgba(255,255,255,0.2);
     line-height:1.2;
+    outline:2px solid rgba(139,0,0,0.6);
+    outline-offset:-5px;
   }
 
   .space::before {
     content:attr(data-index);
     position:absolute;
-    top:2px;
-    left:4px;
+    top:3px;
+    left:5px;
     font-size:clamp(7px, 1vw, 10px);
-    opacity:0.4;
+    opacity:0.5;
     font-weight:bold;
+    background:rgba(0,0,0,0.3);
+    padding:2px 4px;
+    border-radius:4px;
   }
 
-  .space:hover {transform:translateY(-8px) scale(1.05); box-shadow:0 12px 35px rgba(0,0,0,0.8);}
+  /* Road connection effect */
+  .space::after {
+    content:'';
+    position:absolute;
+    background:linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,107,53,0.4) 20%,
+      rgba(255,107,53,0.6) 50%,
+      rgba(255,107,53,0.4) 80%,
+      transparent 100%);
+    height:4px;
+    width:calc(100% + clamp(4px, 1vw, 8px));
+    top:50%;
+    right:-clamp(4px, 1vw, 8px);
+    transform:translateY(-50%);
+    z-index:-1;
+  }
 
-  .green {background:linear-gradient(135deg, #1a4d1a 0%, #2d7a2d 100%); border-color:#3a9d3a;}
-  .orange {background:linear-gradient(135deg, #cc5500 0%, #ff6b35 100%); border-color:#ff8c5a;}
-  .red {background:linear-gradient(135deg, #8b0000 0%, #d32f2f 100%); border-color:#ff5252;}
-  .checkpoint {background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%); color:#000; font-weight:bold; border-color:#fff;}
-  .goback {background:linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); border-color:#ab47bc; font-weight:bold;}
-  .remove-clothing {background:linear-gradient(135deg, #e91e63 0%, #f06292 100%); border-color:#ff4081; font-weight:bold; color:#fff;}
-  .add-clothing {background:linear-gradient(135deg, #1976d2 0%, #42a5f5 100%); border-color:#64b5f6; font-weight:bold; color:#fff;}
-  .shot {background:linear-gradient(135deg, #f57c00 0%, #ffb74d 100%); border-color:#ffcc80; font-weight:bold; color:#000;}
+  /* Remove connecting line from last tile in each row */
+  .space:nth-child(10n)::after,
+  .space:last-child::after {
+    display:none;
+  }
+
+  .space:hover {
+    transform:translateY(-8px) scale(1.05);
+    box-shadow:0 15px 40px rgba(0,0,0,0.9),
+               inset 0 2px 4px rgba(255,255,255,0.2),
+               0 0 0 3px rgba(0,0,0,0.6),
+               0 0 0 6px rgba(255,107,53,0.5),
+               0 0 30px rgba(255,107,53,0.6);
+  }
+
+  .green {
+    background:linear-gradient(135deg, #1a4d1a 0%, #2d7a2d 100%);
+    border-color:#4ade80;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(74,222,128,0.4);
+  }
+  .orange {
+    background:linear-gradient(135deg, #cc5500 0%, #ff6b35 100%);
+    border-color:#ffa500;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,165,0,0.4);
+  }
+  .red {
+    background:linear-gradient(135deg, #8b0000 0%, #d32f2f 100%);
+    border-color:#ff6b6b;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,107,107,0.4);
+  }
+  .checkpoint {
+    background:linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color:#000;
+    font-weight:bold;
+    border-color:#fff;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.3),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,215,0,0.6),
+               0 0 30px rgba(255,215,0,0.5);
+  }
+  .goback {
+    background:linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);
+    border-color:#ab47bc;
+    font-weight:bold;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(171,71,188,0.4);
+  }
+  .remove-clothing {
+    background:linear-gradient(135deg, #e91e63 0%, #f06292 100%);
+    border-color:#ff4081;
+    font-weight:bold;
+    color:#fff;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,64,129,0.5),
+               0 0 25px rgba(233,30,99,0.4);
+  }
+  .add-clothing {
+    background:linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+    border-color:#64b5f6;
+    font-weight:bold;
+    color:#fff;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(100,181,246,0.4);
+  }
+  .shot {
+    background:linear-gradient(135deg, #f57c00 0%, #ffb74d 100%);
+    border-color:#ffcc80;
+    font-weight:bold;
+    color:#000;
+    box-shadow:0 8px 25px rgba(0,0,0,0.8),
+               inset 0 2px 4px rgba(255,255,255,0.15),
+               0 0 0 3px rgba(0,0,0,0.5),
+               0 0 0 6px rgba(255,183,77,0.5),
+               0 0 25px rgba(245,124,0,0.4);
+  }
   .start {
     background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
     font-size:clamp(18px, 4vw, 26px);
@@ -166,9 +288,16 @@
     font-weight:bold;
     aspect-ratio:auto !important;
     padding:clamp(15px, 3vw, 25px);
-    border:4px solid #00ff00;
-    box-shadow:0 0 40px rgba(0,255,0,0.6), inset 0 0 20px rgba(255,255,255,0.2);
+    border:5px solid #00ff00;
+    box-shadow:0 10px 40px rgba(0,255,0,0.7),
+               inset 0 0 30px rgba(255,255,255,0.3),
+               0 0 0 4px rgba(0,0,0,0.6),
+               0 0 0 8px rgba(0,255,0,0.5);
     grid-column:1 / -1;
+    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+  .start::after {
+    display:none;
   }
   .finish {
     background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%);
@@ -176,44 +305,84 @@
     font-weight:bold;
     aspect-ratio:auto !important;
     padding:clamp(15px, 3vw, 25px);
-    border:4px solid #ff00ff;
-    box-shadow:0 0 40px rgba(255,0,255,0.6), inset 0 0 20px rgba(255,255,255,0.2);
+    border:5px solid #ff00ff;
+    box-shadow:0 10px 40px rgba(255,0,255,0.7),
+               inset 0 0 30px rgba(255,255,255,0.3),
+               0 0 0 4px rgba(0,0,0,0.6),
+               0 0 0 8px rgba(255,0,255,0.5);
     grid-column:1 / -1;
+    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+  .finish::after {
+    display:none;
   }
 
   .player1, .player2 {
     animation:pulse 1s ease-in-out infinite;
     z-index:10;
+    transform:scale(1.1);
   }
 
   .player1 {
-    border:4px solid #00ffff;
-    box-shadow:0 0 30px #00ffff, inset 0 0 20px rgba(0,255,255,0.3);
+    border:5px solid #00ffff !important;
+    box-shadow:0 0 40px #00ffff,
+               inset 0 0 25px rgba(0,255,255,0.4),
+               0 0 0 4px rgba(0,0,0,0.8),
+               0 0 0 8px rgba(0,255,255,0.6) !important;
   }
 
   .player2 {
-    border:4px solid #ff00ff;
-    box-shadow:0 0 30px #ff00ff, inset 0 0 20px rgba(255,0,255,0.3);
+    border:5px solid #ff00ff !important;
+    box-shadow:0 0 40px #ff00ff,
+               inset 0 0 25px rgba(255,0,255,0.4),
+               0 0 0 4px rgba(0,0,0,0.8),
+               0 0 0 8px rgba(255,0,255,0.6) !important;
   }
 
   @keyframes pulse {
-    0%, 100% {transform:scale(1);}
-    50% {transform:scale(1.15);}
+    0%, 100% {transform:scale(1.1);}
+    50% {transform:scale(1.2);}
   }
 
   /* Card Display */
   #card {
     margin:20px auto;
-    padding:clamp(15px, 4vw, 30px);
-    max-width:700px;
-    min-height:120px;
-    background:linear-gradient(135deg, rgba(255,107,53,0.15) 0%, rgba(255,0,110,0.15) 100%);
+    padding:clamp(20px, 4vw, 35px);
+    max-width:750px;
+    min-height:140px;
+    background:linear-gradient(135deg,
+      rgba(255,107,53,0.2) 0%,
+      rgba(255,0,110,0.25) 50%,
+      rgba(255,107,53,0.2) 100%);
     border-radius:20px;
-    font-size:clamp(16px, 3.5vw, 24px);
-    border:2px solid rgba(255,107,53,0.3);
-    box-shadow:0 10px 40px rgba(255,107,53,0.3);
-    backdrop-filter:blur(10px);
+    font-size:clamp(16px, 3.5vw, 22px);
+    border:3px solid rgba(255,107,53,0.5);
+    box-shadow:0 15px 50px rgba(255,107,53,0.4),
+               inset 0 2px 10px rgba(255,255,255,0.1),
+               0 0 0 1px rgba(0,0,0,0.3);
+    backdrop-filter:blur(15px);
     animation:cardSlideIn 0.5s ease;
+    position:relative;
+    overflow:hidden;
+  }
+
+  #card::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,
+      transparent,
+      rgba(255,255,255,0.1),
+      transparent);
+    animation:cardShine 3s infinite;
+  }
+
+  @keyframes cardShine {
+    0% {left:-100%;}
+    50%, 100% {left:100%;}
   }
 
   @keyframes cardSlideIn {
@@ -283,25 +452,63 @@
 
   /* Buttons */
   button {
-    padding:clamp(10px, 2vw, 15px) clamp(20px, 4vw, 40px);
-    font-size:clamp(14px, 3vw, 18px);
+    padding:clamp(12px, 2vw, 16px) clamp(24px, 4vw, 45px);
+    font-size:clamp(14px, 3vw, 17px);
     margin:10px;
-    border:none;
-    border-radius:12px;
+    border:2px solid rgba(0,0,0,0.3);
+    border-radius:14px;
     cursor:pointer;
-    font-weight:600;
+    font-weight:700;
     transition:all 0.3s ease;
-    box-shadow:0 5px 20px rgba(0,0,0,0.5);
+    box-shadow:0 6px 25px rgba(0,0,0,0.6),
+               inset 0 1px 3px rgba(255,255,255,0.2);
     text-transform:uppercase;
-    letter-spacing:1px;
+    letter-spacing:1.2px;
+    position:relative;
+    overflow:hidden;
+    z-index:1;
   }
 
-  button:hover {transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.7);}
-  button:active {transform:translateY(0); box-shadow:0 3px 10px rgba(0,0,0,0.5);}
+  button * {
+    position:relative;
+    z-index:2;
+  }
+
+  button::before {
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:0;
+    height:0;
+    border-radius:50%;
+    background:rgba(255,255,255,0.2);
+    transform:translate(-50%, -50%);
+    transition:width 0.6s, height 0.6s;
+    z-index:0;
+  }
+
+  button:hover::before {
+    width:300px;
+    height:300px;
+  }
+
+  button:hover {
+    transform:translateY(-4px);
+    box-shadow:0 10px 35px rgba(0,0,0,0.8),
+               inset 0 1px 3px rgba(255,255,255,0.3);
+  }
+
+  button:active {
+    transform:translateY(-1px);
+    box-shadow:0 4px 15px rgba(0,0,0,0.6);
+  }
 
   #beginBtn {background:linear-gradient(135deg, #ff6b35 0%, #ff006e 100%); color:#fff;}
   #rollBtn {background:linear-gradient(135deg, #ffff00 0%, #ffa500 100%); color:#000;}
   #nextBtn {background:linear-gradient(135deg, #00ff00 0%, #00cc00 100%); color:#000;}
+  #redrawBtn {background:linear-gradient(135deg, #ff00ff 0%, #cc00cc 100%); color:#fff;}
+  #skipTimerBtn {background:linear-gradient(135deg, #00ffff 0%, #00cccc 100%); color:#000;}
   #undoBtn {background:linear-gradient(135deg, #888 0%, #666 100%); color:#fff; padding:10px 20px; font-size:14px;}
   #saveBtn, #loadBtn {background:linear-gradient(135deg, #4a90e2 0%, #357abd 100%); color:#fff; padding:10px 20px; font-size:14px;}
 
@@ -374,6 +581,8 @@
   <div class="btn-group">
     <button id="rollBtn" style="display:none">🎲 Roll Dice</button>
     <button id="nextBtn" style="display:none">Next Turn</button>
+    <button id="redrawBtn" style="display:none">🔄 Redraw Card</button>
+    <button id="skipTimerBtn" style="display:none">⏭️ Skip Timer</button>
   </div>
   <div class="btn-group">
     <button id="undoBtn" style="display:none">↶ Undo Move</button>
@@ -385,84 +594,129 @@
 <script>
 // === DATA ===
 const teaseCards = [
-  "Kiss your partner slowly and passionately for 45 seconds",
-  "Trace your fingers sensually along their neck, shoulders, and chest",
-  "Whisper in detail exactly what you want to do to them tonight",
-  "Give a 2-minute full body massage focusing on their most sensitive areas",
-  "Breathe warmly on their neck while gently nibbling their ear",
-  "Slowly scratch your nails down their back and thighs",
-  "Feed each other something sweet, making intense eye contact throughout",
-  "Describe your deepest fantasy involving them in explicit detail",
-  "Kiss and lick every part of their body EXCEPT their genitals for 1 minute",
-  "Blindfold them and tease them with your lips and tongue for 1 minute",
-  "Undress each other slowly while maintaining eye contact",
-  "Take turns telling each other what makes you most aroused",
-  "Give them a sensual lap dance for 1 minute",
-  "Kiss along their inner thighs without touching their most sensitive areas",
-  "Blindfold your partner and slowly kiss their entire body for 90 seconds",
-  "Put handcuffs or restraints on them, then kiss and tease their neck",
-  "Blindfold yourself and let them guide you to kiss their favorite spots",
-  "Restrain their hands above their head and whisper dirty things in their ear"
+  "Kiss your partner slowly and passionately for 45 seconds - OR DRINK",
+  "Trace your fingers sensually along their neck, shoulders, and chest - OR DRINK",
+  "Whisper in detail exactly what you want to do to them tonight - OR DRINK",
+  "Give a 2-minute full body massage focusing on their most sensitive areas - OR DRINK",
+  "Breathe warmly on their neck while gently nibbling their ear - OR DRINK",
+  "Slowly scratch your nails down their back and thighs - OR DRINK",
+  "Feed each other something sweet, making intense eye contact throughout - OR DRINK",
+  "Describe your deepest fantasy involving them in explicit detail - OR DRINK",
+  "Kiss and lick every part of their body EXCEPT their genitals for 1 minute - OR DRINK",
+  "Blindfold them and tease them with your lips and tongue for 1 minute - OR DRINK",
+  "Undress each other slowly while maintaining eye contact - OR DRINK",
+  "Take turns telling each other what makes you most aroused - OR DRINK",
+  "Give them a sensual lap dance for 1 minute - OR DRINK",
+  "Kiss along their inner thighs without touching their most sensitive areas (over clothes if dressed) - OR DRINK",
+  "Blindfold your partner and slowly kiss their entire body for 90 seconds - OR DRINK",
+  "Put handcuffs or restraints on them, then kiss and tease their neck - OR DRINK",
+  "Blindfold yourself and let them guide you to kiss their favorite spots - OR DRINK",
+  "Restrain their hands above their head and whisper dirty things in their ear - OR DRINK",
+  "Let your partner spank you 5 times - they choose how hard - OR DRINK",
+  "Spank your partner 5 times on their butt - ask them how hard - OR DRINK",
+  "Slowly remove one piece of their clothing while kissing them - OR DRINK",
+  "Do a sexy strip tease - remove one piece of your clothing slowly and seductively - OR DRINK",
+  "Both players remove one piece of clothing together on the count of three - OR DRINK"
 ];
 
 const heatCards = [
-  "Remove all remaining clothes from each other as sensually as possible",
-  "Kiss, lick and suck their neck while grinding against them for 1 minute",
-  "Massage their inner thighs and tease around their genitals for 2 minutes",
-  "Grind against each other naked for 90 seconds - no penetration yet",
-  "Spend 2 minutes worshipping their nipples with your mouth and hands",
-  "Let them spank you 10 times - as hard as you can handle",
-  "Sit on their lap naked and make out intensely for 90 seconds",
-  "Use your hand or a toy directly on their genitals over/under underwear for 1 minute",
-  "Bite their neck, shoulders and chest - leave marks",
-  "Get on your knees and describe exactly how you want to please them",
-  "69 position - tease only, no direct contact yet - 1 minute",
-  "Let them watch while you touch yourself for 1 minute",
-  "Take turns edging each other - bring them close but don't let them finish",
-  "Dominant player: Pin them down and tease them mercilessly for 90 seconds",
-  "Handcuff them and pleasure them with your mouth anywhere but genitals for 2 minutes",
-  "Blindfold them, restrain their hands, then grind on them naked for 90 seconds",
-  "Restrain your partner and use ice cubes or feathers on their sensitive areas",
-  "Blindfold them and tease their genitals with your fingers for 2 minutes",
-  "Handcuff them to the bed and give them a slow, teasing body massage",
-  "Blindfolded partner: Let them touch and explore you while restrained for 2 minutes"
+  "Remove all remaining clothes from each other as sensually as possible - OR DRINK",
+  "Kiss, lick and suck their neck while grinding against them for 1 minute (with clothes if still dressed) - OR DRINK",
+  "Massage their inner thighs and tease around their genitals for 2 minutes (underwear to the side or over it) - OR DRINK",
+  "Grind against each other for 90 seconds - naked if undressed, with clothes if still on - no penetration - OR DRINK",
+  "Spend 2 minutes worshipping their nipples with your mouth and hands (expose them or tease through clothing) - OR DRINK",
+  "Let them spank you 10 times - as hard as you can handle - OR DRINK",
+  "Sit on their lap and make out intensely for 90 seconds (naked if undressed, clothed grinding if not) - OR DRINK",
+  "Use your hand or a toy directly on their genitals over/under underwear for 1 minute - OR DRINK",
+  "Bite their neck, shoulders and chest - leave marks - OR DRINK",
+  "Get on your knees and describe exactly how you want to please them - OR DRINK",
+  "69 position - tease only, no direct contact yet - 1 minute - OR DRINK",
+  "Let them watch while you touch yourself for 1 minute (underwear to the side if still on) - OR DRINK",
+  "Take turns edging each other - bring them close through underwear or directly - 2 minutes - OR DRINK",
+  "Dominant player: Pin them down and tease them mercilessly for 90 seconds - OR DRINK",
+  "Handcuff them and pleasure them with your mouth anywhere but genitals for 2 minutes - OR DRINK",
+  "Blindfold them, restrain their hands, then grind on them for 90 seconds (naked or clothed) - OR DRINK",
+  "Restrain your partner and use ice cubes or feathers on their sensitive areas - OR DRINK",
+  "Blindfold them and tease their genitals with your fingers for 2 minutes (panties/underwear to the side) - OR DRINK",
+  "Handcuff them to the bed and give them a slow, teasing body massage - OR DRINK",
+  "Blindfolded partner: Let them touch and explore you while restrained for 2 minutes - OR DRINK",
+  "Spank your partner 10 times - let them choose the intensity - OR DRINK",
+  "Get spanked 10 times by your partner - you tell them how hard - OR DRINK",
+  "Random grinding positions - switch every 45 seconds for 2 minutes - POSITIONS WILL BE RANDOMLY SELECTED - no penetration - OR DRINK",
+  "Strip for your partner - remove 2 pieces of clothing in the sexiest way possible - OR DRINK",
+  "They strip for you - watch as they slowly remove 2 pieces of clothing - OR DRINK",
+  "Undress each other down to underwear only while making out - OR DRINK"
 ];
 
 const fireCards = [
-  "Perform oral sex on your partner - 3 minutes of pure pleasure",
-  "Receive oral sex - tell them exactly how you want it - 3 minutes",
-  "69 position - make each other moan - 2 minutes",
-  "Penetration or strap-on - any position you both desire - 3 minutes",
-  "Use your favorite toy together - 3 minutes of intense pleasure",
-  "Manual stimulation - don't stop until they scream your name",
-  "Edge them intensely - bring them to the brink 3 times before allowing release",
-  "Wild passionate sex in your favorite position - no time limit",
-  "Dominant player: Spank them while taking them from behind - intense",
-  "Both try to make the other finish first - whoever loses goes next",
-  "Finish them with oral - make it unforgettable",
-  "Complete freedom - do whatever you both desire most right now",
-  "Simultaneous orgasm challenge - try to finish together",
-  "Final round: Make love until you both reach climax - game ends when you do 🔥",
-  "Handcuff them and perform oral sex until they beg to finish - 3 minutes minimum",
-  "Blindfold and restrain them, then have your way with them for 5 minutes",
-  "Restrain them and edge them repeatedly - don't let them finish until they're desperate",
-  "Blindfolded sex - one partner blindfolded while the other is in complete control",
-  "Handcuff them to the bed and ride them until you both climax",
-  "Restrain them and use toys on them while denying their release - 3 minutes",
-  "Blindfold them and make them guess what you're doing - oral, penetration, or toys",
-  "Full bondage: Handcuffs + blindfold + complete domination until climax"
+  "Perform oral sex on your partner - 3 minutes of pure pleasure (panties/underwear to the side if still on) - OR DRINK",
+  "Receive oral sex - tell them exactly how you want it - 3 minutes (underwear to the side or off) - OR DRINK",
+  "69 position - make each other moan - 2 minutes (underwear to the side) - OR DRINK",
+  "Naked grinding: Missionary position - grind intensely for 2 minutes - no penetration - OR DRINK",
+  "Naked grinding: Cowgirl/reverse cowgirl position - ride and grind for 2 minutes - no penetration - OR DRINK",
+  "Naked grinding: Doggy style position - grind from behind for 2 minutes - no penetration - OR DRINK",
+  "Naked grinding: Spooning position - grind slowly and sensually for 2 minutes - no penetration - OR DRINK",
+  "Naked grinding: Standing up against the wall - intense grinding for 90 seconds - no penetration - OR DRINK",
+  "Grind on them in any position you want - 3 minutes (clothed or naked, your choice) - OR DRINK",
+  "Use your favorite toy together for external stimulation - 3 minutes of intense pleasure - OR DRINK",
+  "Manual stimulation - bring them to the edge and keep them there - 2 minutes - OR DRINK",
+  "Complete freedom - grind, touch, explore each other's bodies intensely - 3 minutes - OR DRINK",
+  "Dominant player: Restrain them and tease their most sensitive areas for 5 minutes - OR DRINK",
+  "Blindfold them and perform oral sex on them - take your time - 3 minutes (underwear to the side) - OR DRINK",
+  "Handcuff them and give them the most intense oral experience - 3 minutes (underwear to the side if on) - OR DRINK",
+  "Both partners: Mutual manual stimulation - intense and passionate - 3 minutes - OR DRINK",
+  "Restrain them and use toys on their most sensitive areas - 3 minutes of teasing - OR DRINK",
+  "Blindfold them and pleasure them with your mouth and hands - 5 minutes - OR DRINK",
+  "Sit on their face while they pleasure you - 3 minutes (panties to the side or off) - OR DRINK",
+  "Grind in multiple positions - switch every 30 seconds for 3 minutes - POSITIONS WILL BE RANDOMLY SELECTED - no penetration - OR DRINK",
+  "Spank them hard 15 times - make them count each one - OR DRINK",
+  "Get spanked 15 times - count them out loud - OR DRINK",
+  "Random grinding marathon - switch positions every 20 seconds for 2 minutes - POSITIONS WILL BE RANDOMLY SELECTED - no penetration - OR DRINK",
+  "Restrain them and spank them 20 times while teasing their genitals - OR DRINK",
+  "Get completely naked if you aren't already - then grind on them for 2 minutes - OR DRINK",
+  "Strip each other completely naked and explore every inch of each other's bodies - 2 minutes - OR DRINK"
 ];
 
 const board = [
-  "start","Tease","Remove 1","Tease","Go Back 2","Tease","Heart","Tease","Checkpoint","Both draw Tease","Tease","Shot","Tease","Go Back 3","Tease","Heart",
-  "Tease → Heat","Heat","Add 1","Heat","Heat","Go Back 2","Heart","Heat","Remove 1","Checkpoint","Both draw Heat","Heat","Shot","Heat","Spank 10 times","Go Back 4","Heat",
-  "Heat → Fire","Fire","Fire","Remove 2","Go Back 3","Fire","Heart","Fire","Add 1","Checkpoint","Both draw Fire","Fire","Shot","Go Back 5","Fire","Heart","Fire","Fire","finish"
+  "start","Tease","Remove 1","Tease","Go Back 2","Tease","Heart","Remove 1","Checkpoint","Both draw Tease","Tease","Shot","Tease","Go Back 3","Remove 1","Heart",
+  "Tease → Heat","Heat","Remove 1","Heat","Heat","Go Back 2","Heart","Heat","Remove 1","Checkpoint","Both draw Heat","Heat","Shot","Remove 2","Shot","Go Back 4","Heat",
+  "Heat → Fire","Fire","Remove 2","Fire","Go Back 3","Fire","Heart","Remove 2","Fire","Checkpoint","Both draw Fire","Fire","Shot","Go Back 5","Fire","Heart","Remove 2","Shot","finish"
 ];
 
 // === STATE ===
 let p1 = 0, p2 = 0, currentPlayer = 1, timerInterval;
 let player1Name = "Player 1", player2Name = "Player 2";
 let gameHistory = [];
+let currentPosition = 0;
+let lastDrawnCard = "";
+
+// === DECK SYSTEM ===
+let teaseDeck = [];
+let heatDeck = [];
+let fireDeck = [];
+let teaseDeckIndex = 0;
+let heatDeckIndex = 0;
+let fireDeckIndex = 0;
+
+// Shuffle function (Fisher-Yates algorithm)
+function shuffleArray(array) {
+  const shuffled = [...array]; // Create a copy
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// Initialize shuffled decks
+function initializeDecks() {
+  teaseDeck = shuffleArray(teaseCards);
+  heatDeck = shuffleArray(heatCards);
+  fireDeck = shuffleArray(fireCards);
+  teaseDeckIndex = 0;
+  heatDeckIndex = 0;
+  fireDeckIndex = 0;
+}
 
 // === PLAYER NAMES ===
 document.getElementById("beginBtn").onclick = () => {
@@ -471,6 +725,9 @@ document.getElementById("beginBtn").onclick = () => {
 
   player1Name = p1Input || "Player 1";
   player2Name = p2Input || "Player 2";
+
+  // Initialize shuffled decks when game starts
+  initializeDecks();
 
   document.getElementById("setupScreen").style.display = "none";
   document.getElementById("gameScreen").style.display = "block";
@@ -525,8 +782,68 @@ function buildBoard() {
 
 // === CARD LOGIC ===
 function drawCard(zone) {
-  let cards = zone==="Tease" ? teaseCards : zone==="Heat" ? heatCards : fireCards;
-  return cards[Math.floor(Math.random()*cards.length)];
+  let card;
+
+  // Draw from the appropriate deck based on zone
+  if (zone === "Tease") {
+    // Check if deck is exhausted, reshuffle if needed
+    if (teaseDeckIndex >= teaseDeck.length) {
+      teaseDeck = shuffleArray(teaseCards);
+      teaseDeckIndex = 0;
+      console.log("♻️ Tease deck reshuffled!");
+    }
+    card = teaseDeck[teaseDeckIndex];
+    teaseDeckIndex++;
+  } else if (zone === "Heat") {
+    // Check if deck is exhausted, reshuffle if needed
+    if (heatDeckIndex >= heatDeck.length) {
+      heatDeck = shuffleArray(heatCards);
+      heatDeckIndex = 0;
+      console.log("♻️ Heat deck reshuffled!");
+    }
+    card = heatDeck[heatDeckIndex];
+    heatDeckIndex++;
+  } else { // Fire
+    // Check if deck is exhausted, reshuffle if needed
+    if (fireDeckIndex >= fireDeck.length) {
+      fireDeck = shuffleArray(fireCards);
+      fireDeckIndex = 0;
+      console.log("♻️ Fire deck reshuffled!");
+    }
+    card = fireDeck[fireDeckIndex];
+    fireDeckIndex++;
+  }
+
+  // If it's a random position grinding card, generate random positions
+  if (card.includes("POSITIONS WILL BE RANDOMLY SELECTED")) {
+    const positions = ["Missionary", "Cowgirl", "Reverse Cowgirl", "Doggy", "Spooning", "Standing", "Against Wall", "Lap Sitting"];
+    const shuffled = shuffleArray(positions);
+
+    // Determine how many positions based on the card
+    let numPositions = 6;
+    let timePerPosition = "30 seconds";
+    let totalTime = "3 minutes";
+
+    if (card.includes("45 seconds for 2 minutes")) {
+      numPositions = 3;
+      timePerPosition = "45 seconds";
+      totalTime = "2 minutes";
+    } else if (card.includes("20 seconds for 2 minutes")) {
+      numPositions = 6;
+      timePerPosition = "20 seconds";
+      totalTime = "2 minutes";
+    }
+
+    const selected = shuffled.slice(0, numPositions);
+    let positionList = "";
+    for (let i = 0; i < numPositions; i++) {
+      positionList += `${i + 1}. ${selected[i]}<br>`;
+    }
+
+    card = `Random grinding positions - switch every ${timePerPosition} for ${totalTime}:<br><br>${positionList}<br>No penetration - OR DRINK`;
+  }
+
+  return card;
 }
 
 function landOn(pos) {
@@ -640,7 +957,9 @@ function updatePositions() {
 // === SAVE/LOAD ===
 function saveGame() {
   const gameState = {
-    p1, p2, currentPlayer, player1Name, player2Name, gameHistory
+    p1, p2, currentPlayer, player1Name, player2Name, gameHistory,
+    teaseDeck, heatDeck, fireDeck,
+    teaseDeckIndex, heatDeckIndex, fireDeckIndex
   };
   localStorage.setItem("slowBurnSave", JSON.stringify(gameState));
   alert("Game saved! 💾");
@@ -659,6 +978,19 @@ function loadGame() {
   player1Name = gameState.player1Name || "Player 1";
   player2Name = gameState.player2Name || "Player 2";
   gameHistory = gameState.gameHistory || [];
+
+  // Restore deck states if they exist, otherwise initialize new decks
+  if (gameState.teaseDeck && gameState.heatDeck && gameState.fireDeck) {
+    teaseDeck = gameState.teaseDeck;
+    heatDeck = gameState.heatDeck;
+    fireDeck = gameState.fireDeck;
+    teaseDeckIndex = gameState.teaseDeckIndex || 0;
+    heatDeckIndex = gameState.heatDeckIndex || 0;
+    fireDeckIndex = gameState.fireDeckIndex || 0;
+  } else {
+    // If old save file without deck data, initialize fresh decks
+    initializeDecks();
+  }
 
   document.getElementById("setupScreen").style.display = "none";
   document.getElementById("gameScreen").style.display = "block";
@@ -716,7 +1048,17 @@ document.getElementById("rollBtn").onclick = () => {
   setTimeout(() => {
     const pos = currentPlayer===1 ? p1 : p2;
     const action = landOn(pos);
+    currentPosition = pos;
+    lastDrawnCard = action;
     document.getElementById("card").innerHTML = action;
+
+    // Show redraw button for card actions (not for special tiles)
+    const isCardAction = action.includes("OR DRINK");
+    if (isCardAction) {
+      document.getElementById("redrawBtn").style.display = "inline-block";
+    } else {
+      document.getElementById("redrawBtn").style.display = "none";
+    }
 
     // Particle effects based on zone or tile type
     if (action.includes("Remove")) {
@@ -743,16 +1085,21 @@ document.getElementById("rollBtn").onclick = () => {
       const secs = action.includes("5 minute") ? 300 : action.includes("3 minute") ? 180 : action.includes("2 minute") ? 120 : action.includes("90 seconds") ? 90 : action.includes("45 seconds") ? 45 : 60;
       startTimer(secs, () => {
         document.getElementById("nextBtn").style.display = "inline-block";
+        document.getElementById("skipTimerBtn").style.display = "none";
       });
       document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("skipTimerBtn").style.display = "inline-block";
     } else {
       document.getElementById("nextBtn").style.display = "inline-block";
+      document.getElementById("skipTimerBtn").style.display = "none";
     }
 
     if (p1 >= board.length-1 && p2 >= board.length-1) {
-      document.getElementById("card").innerHTML = `<h2>🔥 IGNITE 🔥<br><br>Both ${player1Name} and ${player2Name} reached the end!<br><br>Finish exactly how you want.<br><br>Game over when you both climax together.</h2>`;
+      document.getElementById("card").innerHTML = `<h2>🔥 IGNITE 🔥<br><br>Both ${player1Name} and ${player2Name} reached the end!<br><br>Continue the passion and enjoy each other to the fullest.<br><br>The game is complete - now it's all about you two! 💕</h2>`;
       document.getElementById("rollBtn").style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("redrawBtn").style.display = "none";
+      document.getElementById("skipTimerBtn").style.display = "none";
       createParticles("🔥", 50);
     }
   }, 1500);
@@ -764,7 +1111,44 @@ document.getElementById("nextBtn").onclick = () => {
   document.getElementById("card").innerHTML = `${playerName}'s turn – Roll the dice! 🎲`;
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("rollBtn").style.display = "inline-block";
+  document.getElementById("redrawBtn").style.display = "none";
+  document.getElementById("skipTimerBtn").style.display = "none";
   updatePositions();
+};
+
+document.getElementById("redrawBtn").onclick = () => {
+  // Redraw a new card from the same zone
+  let zone = currentPosition <= 16 ? "Tease" : currentPosition <= 32 ? "Heat" : "Fire";
+  const newCard = drawCard(zone);
+  lastDrawnCard = newCard;
+  document.getElementById("card").innerHTML = newCard;
+  createParticles("🔄", 15);
+
+  // Check if new card has a timer
+  if (newCard.includes("minute") || newCard.includes("seconds") || newCard.includes("90 seconds")) {
+    const secs = newCard.includes("5 minute") ? 300 : newCard.includes("3 minute") ? 180 : newCard.includes("2 minute") ? 120 : newCard.includes("90 seconds") ? 90 : newCard.includes("45 seconds") ? 45 : 60;
+    startTimer(secs, () => {
+      document.getElementById("nextBtn").style.display = "inline-block";
+      document.getElementById("skipTimerBtn").style.display = "none";
+    });
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("skipTimerBtn").style.display = "inline-block";
+  } else {
+    document.getElementById("nextBtn").style.display = "inline-block";
+    document.getElementById("skipTimerBtn").style.display = "none";
+  }
+};
+
+document.getElementById("skipTimerBtn").onclick = () => {
+  // Stop the timer
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    document.getElementById("timer").textContent = "";
+    document.getElementById("timerFill").style.width = "0%";
+  }
+  document.getElementById("skipTimerBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "inline-block";
+  createParticles("⏭️", 10);
 };
 
 document.getElementById("undoBtn").onclick = undoMove;
