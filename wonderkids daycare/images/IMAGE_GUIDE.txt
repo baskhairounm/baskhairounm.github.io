@@ -1,0 +1,110 @@
+WONDERKIDS DAYCARE - IMAGE GUIDE
+=================================
+
+This folder should contain all images for your website. Below is a list of recommended images and their specifications.
+
+REQUIRED IMAGES:
+---------------
+
+1. LOGO
+   Filename: logo.png or logo.jpg
+   Size: 200-400px wide × 50-100px tall
+   Format: PNG with transparent background preferred
+   Max file size: 100KB
+
+2. HERO IMAGE (Homepage)
+   Filename: hero-image.jpg
+   Size: 1920×1080px (landscape)
+   Content: Children playing, bright classroom, or welcoming scene
+   Max file size: 300KB
+
+3. PROGRAM IMAGES
+   - infants-program.jpg (800×600px) - Infant classroom or baby activities
+   - toddlers-program.jpg (800×600px) - Toddlers playing or learning
+   - preschool-program.jpg (800×600px) - Preschool classroom activities
+   Max file size each: 150KB
+
+4. ABOUT PAGE IMAGES
+   - about-mission.jpg (800×600px) - Children playing/learning together
+   - about-facility.jpg (800×600px) - Exterior or interior of facility
+   Max file size each: 150KB
+
+5. TEAM PHOTOS
+   - staff-1.jpg (400×400px square) - Director/Lead Educator
+   - staff-2.jpg (400×400px square) - Infant/Toddler Educator
+   - staff-3.jpg (400×400px square) - Preschool Educator
+   - staff-4.jpg (400×400px square) - Early Childhood Educator
+   Max file size each: 100KB
+
+6. NUTRITION IMAGE
+   - nutrition.jpg (600×500px) - Healthy meals or children eating
+   Max file size: 100KB
+
+OPTIONAL IMAGES:
+---------------
+- Additional program photos
+- Classroom detail shots
+- Playground/outdoor area
+- Children's artwork
+- More team member photos
+
+IMAGE REQUIREMENTS:
+------------------
+✓ High resolution (at least 72 DPI for web)
+✓ Good lighting and composition
+✓ Smiling children and educators
+✓ Clean, organized spaces
+✓ Diverse representation
+✓ Obtain parent consent for any photos with children
+
+PLACEHOLDER IMAGES:
+------------------
+If you don't have images yet, the site will show:
+- Gradient backgrounds for program cards
+- Generic placeholder images that say "Wonderkids"
+- SVG icons for features
+
+WHERE TO FIND STOCK IMAGES:
+--------------------------
+Free stock photo sites:
+- Unsplash.com
+- Pexels.com
+- Pixabay.com
+
+Search terms to try:
+- "daycare children playing"
+- "preschool classroom"
+- "children learning"
+- "early childhood education"
+- "toddlers activities"
+
+IMAGE OPTIMIZATION TOOLS:
+------------------------
+Compress your images before uploading:
+- TinyPNG.com (easiest)
+- Squoosh.app (more control)
+- ImageOptim (Mac app)
+- RIOT (Windows app)
+
+NAMING CONVENTIONS:
+------------------
+Use lowercase, hyphens instead of spaces:
+✓ Good: infant-classroom-2024.jpg
+✗ Bad: Infant Classroom 2024.jpg
+
+FILE FORMATS:
+------------
+- JPEG (.jpg) - Use for photos
+- PNG (.png) - Use for logos, graphics with transparency
+- SVG (.svg) - Use for icons, logos (scalable)
+- WebP (.webp) - Modern format, smaller file sizes (optional)
+
+NOTES:
+------
+- Always get written permission from parents before using photos of children
+- Ensure photos are your own or properly licensed
+- Respect privacy - no last names or identifying info on children
+- Update photos regularly to keep site fresh
+- Consider seasonal photos (holiday activities, etc.)
+
+Need help? Refer to README.md for detailed instructions.

@@ -1,0 +1,14 @@
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="missionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A8E6CF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#88D4B0;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#missionGrad)"/>
+  <circle cx="150" cy="300" r="50" fill="#ffffff" opacity="0.12"/>
+  <circle cx="480" cy="100" r="70" fill="#ffffff" opacity="0.12"/>
+  <text x="300" y="160" font-family="Arial, sans-serif" font-size="60" text-anchor="middle">🌟</text>
+  <text x="300" y="230" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#ffffff" text-anchor="middle" filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.3))">Our Mission</text>
+  <text x="300" y="270" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" opacity="0.95">Nurturing Young Minds</text>
+</svg>

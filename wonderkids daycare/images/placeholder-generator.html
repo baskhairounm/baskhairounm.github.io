@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Placeholder Images for Wonderkids Daycare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #FF9A8B;
+            text-align: center;
+        }
+        .instructions {
+            background: #FFF9F5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #FF9A8B;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .placeholder {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .placeholder canvas {
+            width: 100%;
+            display: block;
+        }
+        .info {
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        .info h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        .info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        button {
+            background: linear-gradient(135deg, #FF9A8B, #FFB4A8);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #FF7B6B, #FF9A8B);
+        }
+        .download-all {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .download-all button {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Wonderkids Daycare Placeholder Images</h1>
+
+        <div class="instructions">
+            <h2>📥 How to Download Images:</h2>
+            <ol>
+                <li><strong>Right-click</strong> on any image below</li>
+                <li>Select <strong>"Save Image As..."</strong></li>
+                <li>Save with the <strong>exact filename shown</strong> (e.g., "logo.png")</li>
+                <li>Save to your <strong>images/</strong> folder</li>
+                <li>Refresh your website to see the images!</li>
+            </ol>
+            <p><strong>Or use the "Download" button under each image for easier saving.</strong></p>
+        </div>
+
+        <div class="grid" id="imageGrid"></div>
+
+        <div class="download-all">
+            <p style="color: #666; margin-bottom: 15px;">After downloading all images, refresh your website pages to see them!</p>
+        </div>
+    </div>
+
+    <script>
+        const images = [
+            {
+                name: 'logo.png',
+                width: 400,
+                height: 100,
+                text: 'Wonderkids',
+                subtitle: 'DAYCARE',
+                bgColor: '#FF9A8B',
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'hero-image.jpg',
+                width: 1920,
+                height: 1080,
+                text: 'Welcome to Wonderkids',
+                subtitle: 'Where Learning Begins',
+                bgGradient: ['#FFB4A8', '#A8E6CF'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'infants-program.jpg',
+                width: 800,
+                height: 600,
+                text: 'Infant Program',
+                subtitle: '6 weeks - 18 months',
+                bgGradient: ['#FFB4A8', '#FFC8C0'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'toddlers-program.jpg',
+                width: 800,
+                height: 600,
+                text: 'Toddler Program',
+                subtitle: '18 months - 3 years',
+                bgGradient: ['#A8E6CF', '#C0F0DD'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'preschool-program.jpg',
+                width: 800,
+                height: 600,
+                text: 'Preschool Program',
+                subtitle: '3 - 5 years',
+                bgGradient: ['#FFD3A5', '#FFE0BA'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'about-mission.jpg',
+                width: 600,
+                height: 400,
+                text: 'Our Mission',
+                subtitle: 'Nurturing Young Minds',
+                bgGradient: ['#A8E6CF', '#88D4B0'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'about-facility.jpg',
+                width: 600,
+                height: 400,
+                text: 'Our Facility',
+                subtitle: 'Milton, Ontario',
+                bgGradient: ['#FFD3A5', '#FFC385'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'staff-1.jpg',
+                width: 400,
+                height: 400,
+                text: 'Director',
+                subtitle: 'Lead Educator',
+                bgColor: '#FFB4A8',
+                textColor: '#FFFFFF',
+                icon: '👩‍🏫'
+            },
+            {
+                name: 'staff-2.jpg',
+                width: 400,
+                height: 400,
+                text: 'Educator',
+                subtitle: 'Infant Care',
+                bgColor: '#A8E6CF',
+                textColor: '#FFFFFF',
+                icon: '👨‍🏫'
+            },
+            {
+                name: 'staff-3.jpg',
+                width: 400,
+                height: 400,
+                text: 'Educator',
+                subtitle: 'Preschool',
+                bgColor: '#FFD3A5',
+                textColor: '#FFFFFF',
+                icon: '👩‍🏫'
+            },
+            {
+                name: 'staff-4.jpg',
+                width: 400,
+                height: 400,
+                text: 'Educator',
+                subtitle: 'Early Childhood',
+                bgColor: '#E6D5F5',
+                textColor: '#FFFFFF',
+                icon: '👨‍🏫'
+            },
+            {
+                name: 'nutrition.jpg',
+                width: 600,
+                height: 500,
+                text: 'Healthy Meals',
+                subtitle: 'Fresh Daily',
+                bgGradient: ['#A8E6CF', '#FFD3A5'],
+                textColor: '#FFFFFF',
+                icon: '🥗'
+            },
+            {
+                name: 'infants-placeholder.jpg',
+                width: 600,
+                height: 400,
+                text: 'Infant Classroom',
+                subtitle: 'Cozy & Safe',
+                bgGradient: ['#FFB4A8', '#FFC8C0'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'toddlers-placeholder.jpg',
+                width: 600,
+                height: 400,
+                text: 'Toddler Classroom',
+                subtitle: 'Play & Learn',
+                bgGradient: ['#A8E6CF', '#C0F0DD'],
+                textColor: '#FFFFFF'
+            },
+            {
+                name: 'preschool-placeholder.jpg',
+                width: 600,
+                height: 400,
+                text: 'Preschool Classroom',
+                subtitle: 'Ready for School',
+                bgGradient: ['#FFD3A5', '#FFE0BA'],
+                textColor: '#FFFFFF'
+            }
+        ];
+
+        function createPlaceholder(config) {
+            const canvas = document.createElement('canvas');
+            canvas.width = config.width;
+            canvas.height = config.height;
+            const ctx = canvas.getContext('2d');
+
+            // Background
+            if (config.bgGradient) {
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, config.bgGradient[0]);
+                gradient.addColorStop(1, config.bgGradient[1]);
+                ctx.fillStyle = gradient;
+            } else {
+                ctx.fillStyle = config.bgColor;
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Pattern overlay
+            ctx.globalAlpha = 0.1;
+            for (let i = 0; i < 50; i++) {
+                ctx.beginPath();
+                ctx.arc(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    Math.random() * 100 + 20,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+
+            // Icon (if present)
+            if (config.icon) {
+                ctx.font = `${canvas.height * 0.3}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fillText(config.icon, canvas.width / 2, canvas.height / 2 - canvas.height * 0.05);
+            }
+
+            // Main text
+            ctx.fillStyle = config.textColor;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+
+            // Main title
+            const fontSize = canvas.height * 0.12;
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(config.text, canvas.width / 2, canvas.height / 2);
+
+            // Subtitle
+            const subtitleSize = canvas.height * 0.06;
+            ctx.font = `${subtitleSize}px Arial, sans-serif`;
+            ctx.fillText(config.subtitle, canvas.width / 2, canvas.height / 2 + fontSize);
+
+            return canvas;
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate all images
+        const grid = document.getElementById('imageGrid');
+        images.forEach(config => {
+            const canvas = createPlaceholder(config);
+
+            const container = document.createElement('div');
+            container.className = 'placeholder';
+
+            container.appendChild(canvas);
+
+            const info = document.createElement('div');
+            info.className = 'info';
+            info.innerHTML = `
+                <h3>${config.name}</h3>
+                <p>Size: ${config.width} × ${config.height}px</p>
+                <button onclick="downloadImage('${config.name}')">⬇️ Download ${config.name}</button>
+            `;
+
+            container.appendChild(info);
+            grid.appendChild(container);
+        });
+
+        // Store canvases for download
+        window.placeholderCanvases = {};
+        images.forEach((config, index) => {
+            const canvas = createPlaceholder(config);
+            window.placeholderCanvases[config.name] = canvas;
+        });
+
+        window.downloadImage = function(filename) {
+            const canvas = window.placeholderCanvases[filename];
+            if (canvas) {
+                downloadCanvas(canvas, filename);
+            }
+        };
+    </script>
+</body>
+</html>

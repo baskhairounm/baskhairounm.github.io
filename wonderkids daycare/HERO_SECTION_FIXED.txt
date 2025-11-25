@@ -1,0 +1,112 @@
+═══════════════════════════════════════════════════════════════
+  HERO SECTION TEXT VISIBILITY FIXED
+═══════════════════════════════════════════════════════════════
+
+✅ PROBLEM IDENTIFIED:
+───────────────────────────────────────────────────────────────
+- White text was not visible on light background
+- Text appearing behind/under other elements
+- Overlay was too opaque (85% white)
+- Poor contrast making text hard to read
+
+✅ FIXES APPLIED:
+───────────────────────────────────────────────────────────────
+
+1. REDUCED OVERLAY OPACITY
+   Before: 85% white overlay
+   After:  30% white overlay
+   Result: Background colors show through better
+
+2. IMPROVED TEXT CONTRAST
+   - Changed subtitle from light gray to dark text
+   - Added white text-shadow for better readability
+   - Increased font weights for visibility
+
+3. FIXED Z-INDEX LAYERING
+   - Hero overlay: z-index: 1 (bottom)
+   - Hero content: z-index: 10 (top)
+   - Hero buttons: z-index: 10 (top)
+   - Text now properly appears above background
+
+4. ENHANCED TEXT SHADOWS
+   - Title: 2px shadow with white glow
+   - Subtitle: 1px shadow with white glow
+   - Makes text stand out on any background
+
+═══════════════════════════════════════════════════════════════
+  WHAT CHANGED IN THE CODE
+═══════════════════════════════════════════════════════════════
+
+css/style.css:
+
+✓ .hero-overlay: Changed opacity from 0.85 to 0.3
+✓ .hero-overlay: Added z-index: 1
+✓ .hero-content: Changed z-index from 2 to 10
+✓ .hero-title: Added text-shadow for visibility
+✓ .hero-title: Added font-weight: 700
+✓ .hero-subtitle: Changed color from light-text to dark-text
+✓ .hero-subtitle: Added text-shadow for visibility
+✓ .hero-subtitle: Added font-weight: 500
+✓ .hero-buttons: Added z-index: 10
+
+═══════════════════════════════════════════════════════════════
+  WHAT YOU SHOULD SEE NOW
+═══════════════════════════════════════════════════════════════
+
+✅ "Where Curiosity Blooms & Friendships Grow" - CLEARLY VISIBLE
+✅ "Quality early learning and childcare..." - CLEARLY VISIBLE
+✅ Buttons visible and clickable
+✅ Text properly layered on top
+✅ Good contrast against background
+✅ No overlapping or white-on-white issues
+
+═══════════════════════════════════════════════════════════════
+  TEST IT NOW
+═══════════════════════════════════════════════════════════════
+
+1. REFRESH YOUR BROWSER
+   - Close and reopen index.html
+   - Or press Ctrl+Shift+R (hard refresh)
+
+2. CHECK THE HERO SECTION
+   ✓ Main heading should be dark and clear
+   ✓ Subtitle should be dark and clear
+   ✓ Both should have a slight glow effect
+   ✓ Buttons should be fully visible
+   ✓ Background gradient/image visible through
+
+3. SCROLL TEST
+   ✓ Text should stay on top as you scroll
+   ✓ No elements should overlap
+
+═══════════════════════════════════════════════════════════════
+  IF YOU WANT TO ADJUST FURTHER
+═══════════════════════════════════════════════════════════════
+
+Open css/style.css and find line 393:
+
+To make overlay darker (if background too bright):
+   background: rgba(255, 255, 255, 0.5);
+                                    ↑ increase this number
+
+To make overlay lighter (if text hard to see):
+   background: rgba(255, 255, 255, 0.2);
+                                    ↑ decrease this number
+
+To change text color (if needed):
+   Line 405 & 415: change var(--dark-text) to #000000
+
+═══════════════════════════════════════════════════════════════
+  SUMMARY
+═══════════════════════════════════════════════════════════════
+
+✅ Text visibility: FIXED
+✅ Layering issues: FIXED
+✅ White-on-white: FIXED
+✅ Contrast: IMPROVED
+✅ Readability: EXCELLENT
+
+Your hero section now has clear, readable text with proper
+contrast and layering!
+
+═══════════════════════════════════════════════════════════════
